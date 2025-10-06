@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detalhes do Ovino</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container my-5">
+    <h1 class="mb-4">Detalhes do Ovino</h1>
+
+    <div class="card mx-auto" style="max-width: 400px;">
+        {% if ovino.foto %}
+        <img src="{{ ovino.foto.url }}" class="card-img-top" alt="Foto do Ovino">
+        {% else %}
+        <img src="https://via.placeholder.com/400x300?text=Sem+Foto" class="card-img-top" alt="Sem Foto">
+        {% endif %}
+
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Número do Brinco:</strong> {{ ovino.numero_brinco }}</li>
+                <li class="list-group-item"><strong>Raça:</strong> {{ ovino.raca }}</li>
+                <li class="list-group-item"><strong>Sexo:</strong> {{ ovino.sexo }}</li>
+                <li class="list-group-item"><strong>Cor:</strong> {{ ovino.cor }}</li>
+                <li class="list-group-item"><strong>Peso atual:</strong> {{ ovino.peso_atual }} kg</li>
+                <li class="list-group-item"><strong>Altura:</strong> {{ ovino.altura }} cm</li>
+                {% if ovino.sexo == 'F' %}
+                    <li class="list-group-item"><strong>Quantidade de crias:</strong> {{ ovino.quantidade_crias }}</li>
+                    <li class="list-group-item"><strong>Peso ao nascer:</strong> {{ ovino.peso_ao_nascer }} kg</li>
+                {% endif %}
+                <li class="list-group-item"><strong>Filiação:</strong> {{ ovino.filiacao }}</li>
+                <li class="list-group-item"><strong>Status:</strong> {{ ovino.status }}</li>
+                <li class="list-group-item"><strong>Data de nascimento:</strong> {{ ovino.data_nascimento }}</li>
+            </ul>
+        </div>
+        <div class="card-body text-center">
+            <a href="{% url 'editar_ovino' ovino.pk %}" class="btn btn-primary me-2">Editar</a>
+            <a href="{% url 'lista_ovinos' %}" class="btn btn-secondary">Voltar à lista</a>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
