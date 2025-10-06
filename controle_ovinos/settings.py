@@ -129,3 +129,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = 'login'          # página de login
 LOGIN_REDIRECT_URL = 'lista_ovinos'      # para onde vai após login
 LOGOUT_REDIRECT_URL = 'lista_ovinos' # após logout
+
+
+#
+# Durante o desenvolvimento, imprime e-mails no console
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@controleovinos.com'

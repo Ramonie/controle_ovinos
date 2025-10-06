@@ -4,6 +4,7 @@ from .models import Ovino
 from .forms import OvinoForm
 from django.db.models import Q, Count
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 # Lista com filtros avançados
 def lista_ovinos(request):
@@ -83,15 +84,16 @@ def editar_ovino(request, pk):
         form = OvinoForm(instance=ovino)
     return render(request, 'ovinos/editar_ovino.html', {'form': form, 'ovino': ovino})
 
+
+
 @login_required
 def remover_ovino(request, pk):
     ovino = get_object_or_404(Ovino, pk=pk)
     if request.method == 'POST':
         ovino.delete()
+        messages.success(request, f'O ovino {ovino.numero_brinco} foi removido com sucesso!')
         return redirect('lista_ovinos')
     return render(request, 'ovinos/confirmar_remocao.html', {'ovino': ovino})
-
-
 
 
 from django.contrib.auth import logout

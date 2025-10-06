@@ -35,6 +35,8 @@
         </div>
         <div class="card-body text-center">
             <a href="{% url 'editar_ovino' ovino.pk %}" class="btn btn-primary me-2">Editar</a>
+            <a href="{% url 'remover_ovino' ovino.pk %}" class="btn btn-danger btn-sm">Remover</a>
+
             <a href="{% url 'lista_ovinos' %}" class="btn btn-secondary">Voltar à lista</a>
         </div>
     </div>
