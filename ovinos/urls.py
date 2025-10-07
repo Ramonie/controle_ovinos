@@ -16,6 +16,8 @@ urlpatterns = [
     path('relatorios/', views.relatorio_disponiveis, name='relatorio_disponiveis'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
     
+    path('verificar-numero-brinco/', views.verificar_numero_brinco, name='verificar_numero_brinco'),
+    
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name='ovinos/password_reset.html'), name='password_reset'),
     
     path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(template_name='ovinos/password_reset_done.html'), name='password_reset_done'),

@@ -102,3 +102,12 @@ from django.shortcuts import redirect
 def sair(request):
     logout(request)
     return redirect('login')  # redireciona para a página de login após sair
+
+from django.http import JsonResponse
+from .models import Ovino
+
+def verificar_numero_brinco(request):
+    numero_brinco = request.GET.get('numero_brinco', None)
+    existe = Ovino.objects.filter(numero_brinco=numero_brinco).exists()
+    return JsonResponse({'existe': existe})
+
