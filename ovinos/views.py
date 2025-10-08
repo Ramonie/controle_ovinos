@@ -136,3 +136,7 @@ class CustomPasswordResetView(PasswordResetView):
 
         # Redireciona automaticamente para a página de redefinição
         return redirect(f'/reset/{uid}/{token}/')
+def leilao_view(request):
+    return render(request, 'ovinos/leilao.html')
+def home(request):
+    return render(request, 'ovinos/home.html')
