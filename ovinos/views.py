@@ -111,3 +111,28 @@ def verificar_numero_brinco(request):
     existe = Ovino.objects.filter(numero_brinco=numero_brinco).exists()
     return JsonResponse({'existe': existe})
 
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'registration/password_reset_form.html'
+    success_url = '/password_reset_done/'
+
+    def form_valid(self, form):
+        email = form.cleaned_data.get('email')
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            # Mesmo se o e-mail não existir, continua o fluxo padrão
+            return super().form_valid(form)
+
+        # Gera token e UID codificado
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+        # Redireciona automaticamente para a página de redefinição
+        return redirect(f'/reset/{uid}/{token}/')
