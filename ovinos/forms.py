@@ -48,3 +48,19 @@ class OvinoForm(forms.ModelForm):
             raise forms.ValidationError("⚠️ Este número de brinco já está cadastrado.")
 
         return numero_brinco
+from django import forms
+from .models import LoteLeilao
+
+
+class LoteLeilaoForm(forms.ModelForm):
+    class Meta:
+        model = LoteLeilao
+        fields = ['numero_lote', 'descricao', 'preco_inicial', 'data_leilao', 'foto']
+        widgets = {
+            'numero_lote': forms.TextInput(attrs={'class': 'form-control rounded-pill'}),
+            'descricao': forms.Textarea(attrs={'class': 'form-control rounded-3', 'rows': 3}),
+            'preco_inicial': forms.NumberInput(attrs={'class': 'form-control rounded-pill'}),
+            'data_leilao': forms.DateInput(attrs={'class': 'form-control rounded-pill', 'type': 'date'}),
+            'foto': forms.FileInput(attrs={'class': 'form-control rounded-3'}),
+        }
+

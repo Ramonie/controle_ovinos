@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ovinos',
-     "widget_tweaks",
+     'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -128,8 +128,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_URL = 'login'          # página de login
-LOGIN_REDIRECT_URL = 'lista_ovinos'      # para onde vai após login
-LOGOUT_REDIRECT_URL = 'lista_ovinos' # após logout
+LOGIN_REDIRECT_URL = 'home'      # para onde vai após login
+LOGOUT_REDIRECT_URL = 'home' # após logout
 
 
 #

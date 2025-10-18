@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Histórico de Lances - {{ lotes.nome }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container my-5">
+    <h2 class="text-center mb-4">Histórico de Lances - {{ lotes.nome }}</h2>
+    
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <p><strong>Raça:</strong> {{ lotes.raca }}</p>
+            <p><strong>Nº Brinco:</strong> {{ lotes.numero_brinco }}</p>
+            <p><strong>Maior Lance Atual:</strong> 
+                {% if maior_lance %}
+                    R$ {{ maior_lance }}
+                {% else %}
+                    Nenhum lance ainda
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-success">
+            <tr>
+                <th>Usuário</th>
+                <th>Valor (R$)</th>
+                <th>Data e Hora</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lance in lances %}
+                <tr>
+                    <td>{{ lance.usuario.username }}</td>
+                    <td>{{ lance.valor }}</td>
+                    <td>{{ lance.data_hora|date:"d/m/Y H:i" }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center text-muted">Nenhum lance foi feito ainda.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="text-center mt-3">
+        <a href="{% url 'leilao' %}" class="btn btn-secondary">Voltar ao Leilão</a>
+    </div>
+</div>
+</body>
+</html>

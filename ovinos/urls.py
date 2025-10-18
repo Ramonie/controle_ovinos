@@ -14,8 +14,11 @@ urlpatterns = [
     path('relatorios/', views.relatorio_disponiveis, name='relatorio_disponiveis'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
 
-    # 🔹 Página do Leilão
-    path('leilao_view/', views.leilao_view, name='leilao'),
+    # 🔹 Página de Leilão e Lances
+    path('leilao/', views.leilao_view, name='leilao'),
+    path('dar_lance/<int:pk>/', views.dar_lance, name='dar_lance'),
+    path('historico_lances/<int:pk>/', views.historico_lances, name='historico_lances'),
+    path('cadastrar_lote/', views.cadastrar_lote, name='cadastrar_lote'),
 
     # 🔹 Verificar número do brinco (AJAX)
     path('verificar-numero-brinco/', views.verificar_numero_brinco, name='verificar_numero_brinco'),

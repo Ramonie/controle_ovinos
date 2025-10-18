@@ -5,6 +5,17 @@ from .forms import OvinoForm
 from django.db.models import Q, Count
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+from django.http import JsonResponse
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+
+from ovinos import models
 
 # Lista com filtros avançados
 def lista_ovinos(request):
@@ -96,27 +107,20 @@ def remover_ovino(request, pk):
     return render(request, 'ovinos/confirmar_remocao.html', {'ovino': ovino})
 
 
-from django.contrib.auth import logout
-from django.shortcuts import redirect
+
 
 def sair(request):
     logout(request)
-    return redirect('login')  # redireciona para a página de login após sair
+    return redirect('home')  # redireciona para a página de login após sair
 
-from django.http import JsonResponse
-from .models import Ovino
+
+
 
 def verificar_numero_brinco(request):
     numero_brinco = request.GET.get('numero_brinco', None)
     existe = Ovino.objects.filter(numero_brinco=numero_brinco).exists()
     return JsonResponse({'existe': existe})
 
-from django.contrib.auth.views import PasswordResetView
-from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.models import User
-from django.shortcuts import redirect
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
 
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'registration/password_reset_form.html'
@@ -136,7 +140,65 @@ class CustomPasswordResetView(PasswordResetView):
 
         # Redireciona automaticamente para a página de redefinição
         return redirect(f'/reset/{uid}/{token}/')
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.db.models import Q, Max
+from django.contrib.auth.decorators import login_required
+from .models import Ovino, Lance
+
 def leilao_view(request):
-    return render(request, 'ovinos/leilao.html')
+    lotes = LoteLeilao.objects.all().order_by('-data_leilao')
+    return render(request, 'ovinos/leilao_view.html', {'lotes': lotes})
+
+
+@login_required
+def dar_lance(request, pk):
+    lotes = get_object_or_404(LoteLeilao, pk=pk)
+
+    if request.method == 'POST':
+        valor = request.POST.get('valor')
+        if valor:
+            valor = float(valor)
+            maior_lance = lotes.lances.aggregate(Max('valor'))['valor__max'] or 0
+
+            if valor > maior_lance:
+                Lance.objects.create(lotes=lotes, usuario=request.user, valor=valor)
+                messages.success(request, "✅ Lance registrado com sucesso!")
+            else:
+                messages.error(request, f"O lance deve ser maior que o lance atual (R$ {maior_lance:.2f}).")
+
+    return redirect('leilao')
+def historico_lances(request, pk):
+    lotes = get_object_or_404(Ovino, pk=pk)
+    lances = lotes.lances.order_by('-data_hora')
+
+    maior_lance = lotes.lances.aggregate(Max('valor'))['valor__max'] or 0
+
+    return render(request, 'lotes/historico_lances.html', {
+        'lotes': lotes,
+        'lances': lances,
+        'maior_lance': maior_lance
+    })
+    from django.shortcuts import render, redirect
+from .forms import LoteLeilaoForm
+from .models import LoteLeilao
+
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import render, redirect
+from .forms import LoteLeilaoForm
+
+# ✅ Apenas administradores podem acessar
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def cadastrar_lote(request):
+    if request.method == 'POST':
+        form = LoteLeilaoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('leilao')  # volta para a lista de leilões
+    else:
+        form = LoteLeilaoForm()
+    return render(request, 'ovinos/cadastrar_lote.html', {'form': form})
+
 def home(request):
     return render(request, 'ovinos/home.html')
