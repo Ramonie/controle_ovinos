@@ -294,4 +294,3 @@ def verificar_numero_lote(request):
     existe = LoteLeilao.objects.filter(verificar_numero_lote=verificar_numero_lote).exists()
     return JsonResponse({'existe': existe})
 
-
