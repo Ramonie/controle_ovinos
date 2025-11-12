@@ -60,22 +60,26 @@
 
         <!-- Card Login ou Logout -->
         {% if user.is_authenticated %}
-        <div class="col-md-4 mb-4">
-            <div class="card shadow text-center p-4">
-                <h4>👋 Olá, {{ user.username }}</h4>
-                <p>Você está conectado. Deseja sair?</p>
-                <a href="{% url 'logout' %}" class="btn btn-danger w-100">Sair</a>
-            </div>
-        </div>
-        {% else %}
-        <div class="col-md-4 mb-4">
-            <div class="card shadow text-center p-4">
-                <h4>🔐 Acesso Restrito</h4>
-                <p>Entre para acessar as funções administrativas.</p>
-                <a href="{% url 'login' %}" class="btn btn-secondary w-100">Entrar</a>
-            </div>
-        </div>
-        {% endif %}
+<div class="col-md-4 mb-4">
+    <div class="card shadow text-center p-4">
+        <h4>👋 Olá, {{ user.username }}</h4>
+        <p>Você está conectado. Deseja sair?</p>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger w-100">Sair</button>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="col-md-4 mb-4">
+    <div class="card shadow text-center p-4">
+        <h4>🔐 Acesso Restrito</h4>
+        <p>Entre para acessar as funções administrativas.</p>
+        <a href="{% url 'login' %}" class="btn btn-secondary w-100">Entrar</a>
+    </div>
+</div>
+{% endif %}
+
     </div>
 </div>
 

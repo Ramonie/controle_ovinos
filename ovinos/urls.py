@@ -14,7 +14,7 @@ urlpatterns = [
     path('detalhes/<int:pk>/', views.detalhes_ovino, name='detalhes_ovino'),
     path('atualizar_status/<int:pk>/<str:status>/', views.atualizar_status, name='atualizar_status'),
     path('relatorios/', views.relatorio_disponiveis, name='relatorio_disponiveis'),
-    path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
+    path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
 
     # 🔹 Página de Leilão e Lances
     path('leilao/', views.leilao_view, name='leilao_view'),
