@@ -146,20 +146,25 @@ from django.db.models import Q, Max
 from django.contrib.auth.decorators import login_required
 from .models import Ovino, Lance
 
+from django.shortcuts import render
+from .models import LoteLeilao
+
 def leilao_view(request):
     q = request.GET.get('q')
-    lotes = LoteLeilao.objects.filter(encerrado=False)  # 🔥 mostra apenas ativos
+
+    # Mostra TODOS os lotes (ativos e encerrados)
+    lotes = LoteLeilao.objects.all().order_by('-id')
 
     if q:
-        lotes = lotes.filter(numero_lote__icontains=q) | lotes.filter(descricao__icontains=q)
-    
+        lotes = lotes.filter(
+            Q(numero_lote__icontains=q) | Q(descricao__icontains=q)
+        )
+
     return render(request, 'ovinos/leilao_view.html', {'lotes': lotes})
 
 
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-
-
 from django.shortcuts import redirect
 from .models import LoteLeilao
 
@@ -170,18 +175,28 @@ def encerrar_leilao(request):
         numero_lote = request.POST.get('numero_lote')
 
         try:
-            # Permite encerrar múltiplos lotes com o mesmo número (caso ainda existam)
+            # Busca lotes com o número informado
             lotes = LoteLeilao.objects.filter(numero_lote=numero_lote)
+
             if not lotes.exists():
                 messages.error(request, f"Nenhum lote encontrado com o número {numero_lote}.")
             else:
-                lotes.update(encerrado=True)
-                messages.success(request, f"Lote(s) {numero_lote} encerrado(s) com sucesso!")
+                # Filtra apenas os que ainda não estão encerrados
+                lotes_ativos = lotes.filter(encerrado=False)
+
+                if not lotes_ativos.exists():
+                    messages.warning(request, f"O lote {numero_lote} já está encerrado.")
+                else:
+                    lotes_ativos.update(encerrado=True)
+                    messages.success(request, f"Lote(s) {numero_lote} encerrado(s) com sucesso!")
 
         except Exception as e:
             messages.error(request, f"Erro ao encerrar lote: {e}")
 
     return redirect('leilao_view')
+
+   
+
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
@@ -192,19 +207,29 @@ from django.contrib.auth.decorators import login_required
 def dar_lance(request, pk):
     lote = get_object_or_404(LoteLeilao, pk=pk)
 
-    # Obtém o maior lance atual (ou o preço inicial)
+    # 🔹 Pega o último lance (se houver)
     ultimo_lance = lote.lances.order_by('-valor').first()
+
+    # 🔹 Define o valor base (último lance ou preço inicial)
     valor_base = ultimo_lance.valor if ultimo_lance else lote.preco_inicial
 
-    # Gera as opções automáticas de lance (+50 em cada)
-    opcoes_lances = [valor_base + 50 * i for i in range(1, 7)]
+    # 🔹 Se ainda não há lances, o primeiro valor da lista será o preço inicial
+    if not ultimo_lance:
+        opcoes_lances = [lote.preco_inicial] + [lote.preco_inicial + 50 * i for i in range(1, 6)]
+    else:
+        opcoes_lances = [valor_base + 50 * i for i in range(1, 7)]
 
     if request.method == 'POST':
         valor_escolhido = float(request.POST.get('valor'))
-        if valor_escolhido <= valor_base:
+
+        if valor_escolhido <= valor_base and ultimo_lance:
             messages.error(request, "O valor do lance deve ser maior que o lance atual.")
         else:
-            Lance.objects.create(lote=lote, usuario=request.user, valor=valor_escolhido)
+            Lance.objects.create(
+                lote=lote,
+                usuario=request.user,
+                valor=valor_escolhido
+            )
             messages.success(request, f"Lance de R$ {valor_escolhido:.2f} realizado com sucesso!")
             return redirect('leilao_view')
 
