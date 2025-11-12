@@ -36,7 +36,7 @@
         <input type="text" name="q" class="form-control me-2" placeholder="Buscar por brinco ou filiação" value="{{ request.GET.q }}">
         <button type="submit" class="btn btn-primary me-2">Buscar</button>
 
-        {% if user.is_authenticated %}
+        {% if user.is_superuser %}
         <a href="{% url 'adicionar_ovino' %}" class="btn btn-success">Adicionar Ovino</a>
         {% endif %}
 

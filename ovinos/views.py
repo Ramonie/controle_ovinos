@@ -225,6 +225,20 @@ def historico_lances(request, pk):
         'lances': lances,
         'maior_lance': maior_lance
     })
+    
+from django.http import JsonResponse
+from .models import LoteLeilao, Lance
+
+def atualizar_lance(request, lote_id):
+    lote = LoteLeilao.objects.get(pk=lote_id)
+    ultimo_lance = lote.lances.order_by('-valor').first()
+
+    data = {
+        'ultimo_lance': float(ultimo_lance.valor) if ultimo_lance else None,
+        'usuario': ultimo_lance.usuario.username if ultimo_lance else None,
+    }
+    return JsonResponse(data)
+
     from django.shortcuts import render, redirect
 from .forms import LoteLeilaoForm
 from .models import LoteLeilao
