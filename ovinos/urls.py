@@ -1,6 +1,8 @@
 from django.urls import path
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth import views as auth_views
+from django.conf.urls.static import static
+from controle_ovinos import settings
 from . import views
 
 urlpatterns = [
@@ -15,10 +17,12 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
 
     # 🔹 Página de Leilão e Lances
-    path('leilao/', views.leilao_view, name='leilao'),
+    path('leilao/', views.leilao_view, name='leilao_view'),
     path('dar_lance/<int:pk>/', views.dar_lance, name='dar_lance'),
     path('historico_lances/<int:pk>/', views.historico_lances, name='historico_lances'),
     path('cadastrar_lote/', views.cadastrar_lote, name='cadastrar_lote'),
+    path('encerrar_leilao/', views.encerrar_leilao, name='encerrar_leilao'),
+  
 
     # 🔹 Verificar número do brinco (AJAX)
     path('verificar-numero-brinco/', views.verificar_numero_brinco, name='verificar_numero_brinco'),
@@ -40,3 +44,5 @@ urlpatterns = [
         template_name='ovinos/password_reset_complete.html'
     ), name='password_reset_complete'),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

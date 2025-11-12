@@ -147,11 +147,42 @@ from django.contrib.auth.decorators import login_required
 from .models import Ovino, Lance
 
 def leilao_view(request):
-    lotes = LoteLeilao.objects.all().order_by('-data_leilao')
+    q = request.GET.get('q')
+    lotes = LoteLeilao.objects.filter(encerrado=False)  # 🔥 mostra apenas ativos
+
+    if q:
+        lotes = lotes.filter(numero_lote__icontains=q) | lotes.filter(descricao__icontains=q)
+    
     return render(request, 'ovinos/leilao_view.html', {'lotes': lotes})
 
 
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib import messages
+
+
+from django.shortcuts import redirect
+from .models import LoteLeilao
+
 @login_required
+@user_passes_test(lambda u: u.is_superuser)
+def encerrar_leilao(request):
+    if request.method == 'POST':
+        numero_lote = request.POST.get('numero_lote')
+
+        try:
+            # Permite encerrar múltiplos lotes com o mesmo número (caso ainda existam)
+            lotes = LoteLeilao.objects.filter(numero_lote=numero_lote)
+            if not lotes.exists():
+                messages.error(request, f"Nenhum lote encontrado com o número {numero_lote}.")
+            else:
+                lotes.update(encerrado=True)
+                messages.success(request, f"Lote(s) {numero_lote} encerrado(s) com sucesso!")
+
+        except Exception as e:
+            messages.error(request, f"Erro ao encerrar lote: {e}")
+
+    return redirect('leilao_view')
+
 def dar_lance(request, pk):
     lotes = get_object_or_404(LoteLeilao, pk=pk)
 
@@ -167,7 +198,7 @@ def dar_lance(request, pk):
             else:
                 messages.error(request, f"O lance deve ser maior que o lance atual (R$ {maior_lance:.2f}).")
 
-    return redirect('leilao')
+    return redirect('leilao_view')
 def historico_lances(request, pk):
     lotes = get_object_or_404(Ovino, pk=pk)
     lances = lotes.lances.order_by('-data_hora')
@@ -183,22 +214,30 @@ def historico_lances(request, pk):
 from .forms import LoteLeilaoForm
 from .models import LoteLeilao
 
-from django.contrib.auth.decorators import login_required, user_passes_test
+
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import LoteLeilaoForm
 
-# ✅ Apenas administradores podem acessar
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def cadastrar_lote(request):
     if request.method == 'POST':
-        form = LoteLeilaoForm(request.POST)
+        form = LoteLeilaoForm(request.POST, request.FILES)  
         if form.is_valid():
             form.save()
-            return redirect('leilao')  # volta para a lista de leilões
+            return redirect('leilao')
     else:
         form = LoteLeilaoForm()
+    
     return render(request, 'ovinos/cadastrar_lote.html', {'form': form})
 
 def home(request):
     return render(request, 'ovinos/home.html')
+
+def verificar_numero_lote(request):
+    numero_brinco = request.GET.get('verificar_numero_lote', None)
+    existe = LoteLeilao.objects.filter(verificar_numero_lote=verificar_numero_lote).exists()
+    return JsonResponse({'existe': existe})
+
+

@@ -64,3 +64,16 @@ class LoteLeilaoForm(forms.ModelForm):
             'foto': forms.FileInput(attrs={'class': 'form-control rounded-3'}),
         }
 
+from django import forms
+from .models import LoteLeilao
+
+class LoteLeilaoForm(forms.ModelForm):
+    class Meta:
+        model = LoteLeilao
+        fields = ['numero_lote', 'descricao', 'preco_inicial', 'data_leilao', 'foto']
+def clean_numero_lote(self):
+    numero = self.cleaned_data['numero_lote']
+    if LoteLeilao.objects.filter(numero_lote=numero).exists():
+        raise forms.ValidationError("Já existe um lote com esse número!")
+    return numero
+        

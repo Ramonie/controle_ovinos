@@ -1,5 +1,10 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
 
+# -------------------------------
+# 🐑 Modelo Ovino
+# -------------------------------
 class Ovino(models.Model):
     SEXO_CHOICES = (
         ('M', 'Macho'),
@@ -28,31 +33,27 @@ class Ovino(models.Model):
     def __str__(self):
         return f"{self.numero_brinco} - {self.raca}"
 
-from django.db import models
-
-
-from django.utils import timezone
-
 
 class LoteLeilao(models.Model):
-    numero_lote = models.CharField(max_length=20, unique=True)
+    numero_lote = models.CharField(max_length=50, unique=True)
     descricao = models.TextField()
+    data_leilao = models.DateField()
     preco_inicial = models.DecimalField(max_digits=10, decimal_places=2)
-    data_leilao = models.DateField(default=timezone.now)
-    criado_em = models.DateTimeField(auto_now_add=True)
-    atualizado_em = models.DateTimeField(auto_now=True)
     foto = models.ImageField(upload_to='fotos_ovinos/', blank=True, null=True)
+    encerrado = models.BooleanField(default=False) 
 
     def __str__(self):
-        return f"Lote {self.numero_lote} - R$ {self.preco_inicial}"
-    from django.db import models
-from django.contrib.auth.models import User
+        return f"Lote {self.numero_lote}"
+
+
 
 class Lance(models.Model):
-    ovino = models.ForeignKey('Ovino', on_delete=models.CASCADE, related_name='lances')
+    lote = models.ForeignKey(LoteLeilao, on_delete=models.CASCADE, related_name='lances', null=True, blank=True)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     valor = models.DecimalField(max_digits=10, decimal_places=2)
     data_hora = models.DateTimeField(auto_now_add=True)
+    
+
 
     def __str__(self):
-        return f"Lance de {self.usuario.username} - R$ {self.valor} em {self.ovino.nome}"
+        return f"Lance de {self.usuario.username} - R$ {self.valor} no {self.lote.numero_lote}"
