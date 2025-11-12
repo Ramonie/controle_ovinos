@@ -183,22 +183,37 @@ def encerrar_leilao(request):
 
     return redirect('leilao_view')
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import LoteLeilao, Lance
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def dar_lance(request, pk):
-    lotes = get_object_or_404(LoteLeilao, pk=pk)
+    lote = get_object_or_404(LoteLeilao, pk=pk)
+
+    # Obtém o maior lance atual (ou o preço inicial)
+    ultimo_lance = lote.lances.order_by('-valor').first()
+    valor_base = ultimo_lance.valor if ultimo_lance else lote.preco_inicial
+
+    # Gera as opções automáticas de lance (+50 em cada)
+    opcoes_lances = [valor_base + 50 * i for i in range(1, 7)]
 
     if request.method == 'POST':
-        valor = request.POST.get('valor')
-        if valor:
-            valor = float(valor)
-            maior_lance = lotes.lances.aggregate(Max('valor'))['valor__max'] or 0
+        valor_escolhido = float(request.POST.get('valor'))
+        if valor_escolhido <= valor_base:
+            messages.error(request, "O valor do lance deve ser maior que o lance atual.")
+        else:
+            Lance.objects.create(lote=lote, usuario=request.user, valor=valor_escolhido)
+            messages.success(request, f"Lance de R$ {valor_escolhido:.2f} realizado com sucesso!")
+            return redirect('leilao_view')
 
-            if valor > maior_lance:
-                Lance.objects.create(lotes=lotes, usuario=request.user, valor=valor)
-                messages.success(request, "✅ Lance registrado com sucesso!")
-            else:
-                messages.error(request, f"O lance deve ser maior que o lance atual (R$ {maior_lance:.2f}).")
+    return render(request, 'ovinos/dar_lance.html', {
+        'lote': lote,
+        'opcoes_lances': opcoes_lances,
+        'ultimo_lance': ultimo_lance,
+    })
 
-    return redirect('leilao_view')
 def historico_lances(request, pk):
     lotes = get_object_or_404(Ovino, pk=pk)
     lances = lotes.lances.order_by('-data_hora')
@@ -226,7 +241,7 @@ def cadastrar_lote(request):
         form = LoteLeilaoForm(request.POST, request.FILES)  
         if form.is_valid():
             form.save()
-            return redirect('leilao')
+            return redirect('leilao_view')
     else:
         form = LoteLeilaoForm()
     

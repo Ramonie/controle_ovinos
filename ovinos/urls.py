@@ -22,7 +22,7 @@ urlpatterns = [
     path('historico_lances/<int:pk>/', views.historico_lances, name='historico_lances'),
     path('cadastrar_lote/', views.cadastrar_lote, name='cadastrar_lote'),
     path('encerrar_leilao/', views.encerrar_leilao, name='encerrar_leilao'),
-  
+    path('dar_lance/<int:pk>/', views.dar_lance, name='dar_lance'),
 
     # 🔹 Verificar número do brinco (AJAX)
     path('verificar-numero-brinco/', views.verificar_numero_brinco, name='verificar_numero_brinco'),

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Dar Lance - {{ lote.numero_lote }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { border-radius: 15px; padding: 30px; }
+        .btn-lance { width: 100%; margin-bottom: 10px; border-radius: 25px; }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-success">Dar Lance no {{ lote.numero_lote }}</h2>
+        <p class="text-muted">Escolha uma das opções de lance abaixo:</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="mb-3">
+            <p><strong>Descrição:</strong> {{ lote.descricao }}</p>
+            <p><strong>Valor inicial:</strong> R$ {{ lote.preco_inicial }}</p>
+            {% if ultimo_lance %}
+                <p><strong>Último lance:</strong> R$ {{ ultimo_lance.valor }} por {{ ultimo_lance.usuario.username }}</p>
+            {% else %}
+                <p><strong>Nenhum lance ainda.</strong></p>
+            {% endif %}
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            {% for valor in opcoes_lances %}
+                <button type="submit" name="valor" value="{{ valor }}" class="btn btn-success btn-lance">
+                    💰 Lance de R$ {{ valor }}
+                </button>
+            {% endfor %}
+        </form>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'leilao_view' %}" class="btn btn-secondary rounded-pill">⬅️ Voltar ao Leilão</a>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
