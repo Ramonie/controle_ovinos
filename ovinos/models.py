@@ -74,3 +74,17 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} ({self.get_role_display()})"
+
+class AnimalArrematado(models.Model):
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="animais_arrematados"
+    )
+    lote = models.ForeignKey(LoteLeilao, on_delete=models.CASCADE)
+    valor_final = models.DecimalField(max_digits=10, decimal_places=2)
+    data_arremate = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.usuario.username} - Lote {self.lote.numero_lote}"
+

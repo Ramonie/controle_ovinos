@@ -162,11 +162,10 @@ def leilao_view(request):
 
     return render(request, 'ovinos/leilao_view.html', {'lotes': lotes})
 
-
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.shortcuts import redirect
-from .models import LoteLeilao
+from .models import LoteLeilao, Lance, AnimalArrematado
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -175,27 +174,47 @@ def encerrar_leilao(request):
         numero_lote = request.POST.get('numero_lote')
 
         try:
-            # Busca lotes com o número informado
+            # Busca todos os lotes com este número
             lotes = LoteLeilao.objects.filter(numero_lote=numero_lote)
 
             if not lotes.exists():
                 messages.error(request, f"Nenhum lote encontrado com o número {numero_lote}.")
-            else:
-                # Filtra apenas os que ainda não estão encerrados
-                lotes_ativos = lotes.filter(encerrado=False)
+                return redirect('leilao_view')
 
-                if not lotes_ativos.exists():
-                    messages.warning(request, f"O lote {numero_lote} já está encerrado.")
-                else:
-                    lotes_ativos.update(encerrado=True)
-                    messages.success(request, f"Lote(s) {numero_lote} encerrado(s) com sucesso!")
+            # Somente lotes não encerrados
+            lotes_ativos = lotes.filter(encerrado=False)
+
+            if not lotes_ativos.exists():
+                messages.warning(request, f"O lote {numero_lote} já está encerrado.")
+                return redirect('leilao_view')
+
+            # PROCESSANDO CADA LOTE ATIVO
+            for lote in lotes_ativos:
+                # maior lance do lote
+                lance_vencedor = Lance.objects.filter(lote=lote).order_by('-valor').first()
+
+                if not lance_vencedor:
+                    messages.warning(request, f"Lote {lote.numero_lote}: nenhum lance registrado.")
+                    continue
+
+                # Criando AnimalArrematado
+                AnimalArrematado.objects.create(
+                    usuario=lance_vencedor.usuario,
+                    lote=lote,
+                    valor_final=lance_vencedor.valor
+                )
+
+                # Encerrando o lote
+                lote.encerrado = True
+                lote.save()
+
+            messages.success(request, f"Lote(s) {numero_lote} encerrado(s) e animais registrados!")
 
         except Exception as e:
             messages.error(request, f"Erro ao encerrar lote: {e}")
 
     return redirect('leilao_view')
 
-   
 
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -303,15 +322,13 @@ from .forms import ProfileForm
 
 @login_required
 def perfil(request):
+
     profile = request.user.profile
-
-    # 🔹 Ovinos do usuário (ainda não existe owner, então deixei vazio)
-    animals = Ovino.objects.none()  # evitar erro
-
-    # 🔹 Lances feitos pelo usuário
     lances = Lance.objects.filter(usuario=request.user)
 
-    # 🔹 Atualização do perfil
+    # pega todos os animais arrematados pelo usuário
+    animais = AnimalArrematado.objects.filter(usuario=request.user).select_related('lote')
+
     if request.method == "POST":
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
@@ -322,7 +339,7 @@ def perfil(request):
 
     return render(request, "ovinos/perfil.html", {
         "form": form,
-        "animals": animals,
         "lances": lances,
+        "animais": animais,
         "profile": profile,
     })
