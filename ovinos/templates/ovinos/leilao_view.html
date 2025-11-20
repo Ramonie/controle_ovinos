@@ -44,8 +44,12 @@
             </form>
 
             <a href="{% url 'home' %}" class="btn btn-warning rounded-pill mb-2">🏠 Página Inicial</a>
-
+            {% if user.is_authenticated%}
+             <a href="{% url 'perfil' %}" class="btn btn-info rounded-pill mb-2">👤 Meu Perfil</a>
+            {% endif %}
             {% if user.is_superuser %}
+
+           
             <a href="{% url 'cadastrar_lote' %}" class="btn btn-primary rounded-pill mb-2">➕ Cadastrar Novo Lote</a>
             <button class="btn btn-danger rounded-pill mb-2" data-bs-toggle="modal" data-bs-target="#encerrarModal">
                 🚫 Encerrar Leilão

@@ -294,3 +294,35 @@ def verificar_numero_lote(request):
     existe = LoteLeilao.objects.filter(verificar_numero_lote=verificar_numero_lote).exists()
     return JsonResponse({'existe': existe})
 
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Ovino, Lance, LoteLeilao, Profile
+from .forms import ProfileForm
+
+
+@login_required
+def perfil(request):
+    profile = request.user.profile
+
+    # 🔹 Ovinos do usuário (ainda não existe owner, então deixei vazio)
+    animals = Ovino.objects.none()  # evitar erro
+
+    # 🔹 Lances feitos pelo usuário
+    lances = Lance.objects.filter(usuario=request.user)
+
+    # 🔹 Atualização do perfil
+    if request.method == "POST":
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect("perfil")
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, "ovinos/perfil.html", {
+        "form": form,
+        "animals": animals,
+        "lances": lances,
+        "profile": profile,
+    })

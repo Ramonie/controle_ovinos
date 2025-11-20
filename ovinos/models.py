@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.conf import settings  
 
 # -------------------------------
 # 🐑 Modelo Ovino
@@ -57,3 +58,19 @@ class Lance(models.Model):
 
     def __str__(self):
         return f"Lance de {self.usuario.username} - R$ {self.valor} no {self.lote.numero_lote}"
+
+
+class Profile(models.Model):
+    ROLE_CHOICES = (
+        ('organizer','Organizador'),
+        ('buyer','Comprador'),
+        ('visitor','Visitante'),
+    )
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='visitor')
+    phone = models.CharField(max_length=30, blank=True)
+    photo = models.ImageField(upload_to='profiles/', blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.username} ({self.get_role_display()})"

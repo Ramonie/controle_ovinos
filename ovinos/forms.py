@@ -77,3 +77,11 @@ def clean_numero_lote(self):
         raise forms.ValidationError("Já existe um lote com esse número!")
     return numero
         
+
+from django import forms
+from .models import Profile
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['role', 'phone', 'photo']

@@ -24,6 +24,8 @@ urlpatterns = [
     path('encerrar_leilao/', views.encerrar_leilao, name='encerrar_leilao'),
     path('dar_lance/<int:pk>/', views.dar_lance, name='dar_lance'),
     path('atualizar_lance/<int:lote_id>/', views.atualizar_lance, name='atualizar_lance'),
+    path("perfil/", views.perfil, name="perfil"),
+
 
     # 🔹 Verificar número do brinco (AJAX)
     path('verificar-numero-brinco/', views.verificar_numero_brinco, name='verificar_numero_brinco'),
