@@ -325,9 +325,12 @@ def perfil(request):
 
     profile = request.user.profile
     lances = Lance.objects.filter(usuario=request.user)
+    animals = request.user.animais_arrematados.all()
+
 
     # pega todos os animais arrematados pelo usuário
     animais = AnimalArrematado.objects.filter(usuario=request.user).select_related('lote')
+    
 
     if request.method == "POST":
         form = ProfileForm(request.POST, request.FILES, instance=profile)

@@ -1,150 +1,189 @@
 {% load widget_tweaks %}
 
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>{% if form.instance.pk %}Editar Ovino{% else %}Adicionar Ovino{% endif %}</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    input[type="file"] {
-      padding: 6px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>{% if form.instance.pk %}Editar Animal{% else %}Adicionar Animal{% endif %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        header {
+            background: #ffffff;
+            border-bottom: 2px solid #e5e5e5;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h2 {
+            margin: 0;
+            font-weight: bold;
+            color: #2d572c;
+        }
+        body {
+            background: #f8f9fa;
+        }
+        input[type="file"] {
+            padding: 6px;
+        }
+    </style>
 </head>
+
 <body>
-<div class="container my-0">
 
-  <h1 class="mb-4 text-center">
-    {% if form.instance.pk %}
-      Editar Ovino: {{ form.instance.numero_brinco }}
-    {% else %}
-      Adicionar Novo Ovino
-    {% endif %}
-  </h1>
+<header>
+    <h2>🐑 EAJ PecuáriaTech</h2>
 
-  <div class="card shadow">
-    <div class="row g-0">
-      <!-- Coluna da imagem -->
-      <div class="col-md-4 text-center p-3 d-flex align-items-center justify-content-center">
-        <div style="position: relative;">
-          <img 
-            id="preview" 
-            src="{% if form.instance.foto %}{{ form.instance.foto.url }}{% else %}https://via.placeholder.com/300x300?text=Sem+Foto{% endif %}" 
-            class="img-fluid rounded" 
-            alt="Pré-visualização" 
-            style="max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 8px; cursor: pointer;"
-            onclick="document.getElementById('id_foto').click()"
-          >
-        </div>
-      </div>
-
-      <!-- Coluna do formulário -->
-      <div class="col-md-8">
-        <div class="card-body">
-          <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-
-            <div class="row mb-3">
-             <div class="col-md-6">
-                <label for="numero_brinco" class="form-label">Número Brinco</label>
-                {{ form.numero_brinco }}
-                {% if form.numero_brinco.errors %}
-                    <div class="text-danger small mt-1">
-                    {{ form.numero_brinco.errors.0 }}
-                    </div>
-                {% endif %}
-                </div>
-
-
-                
-
-              <div class="col-md-6">
-                <label for="id_raca" class="form-label">Raça</label>
-                {{ form.raca|add_class:"form-control" }}
-              </div>
-            </div>
-
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label for="id_sexo" class="form-label">Sexo</label>
-                {{ form.sexo|add_class:"form-control" }}
-              </div>
-              <div class="col-md-6">
-                <label for="id_cor" class="form-label">Cor</label>
-                {{ form.cor|add_class:"form-control" }}
-              </div>
-            </div>
-
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label for="id_peso_atual" class="form-label">Peso atual</label>
-                {{ form.peso_atual|add_class:"form-control" }}
-              </div>
-              <div class="col-md-6">
-                <label for="id_altura" class="form-label">Altura</label>
-                {{ form.altura|add_class:"form-control" }}
-              </div>
-            </div>
-
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label for="id_peso_ao_nascer" class="form-label">Peso ao nascer</label>
-                {{ form.peso_ao_nascer|add_class:"form-control" }}
-              </div>
-              <div class="col-md-6">
-                <label for="id_quantidade_crias" class="form-label">Quantidade de crias</label>
-                {{ form.quantidade_crias|add_class:"form-control" }}
-              </div>
-            </div>
-
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label for="id_filiacao" class="form-label">Filiação</label>
-                {{ form.filiacao|add_class:"form-control" }}
-              </div>
-              <div class="col-md-6">
-                <label for="id_data_nascimento" class="form-label">Data nascimento</label>
-                {{ form.data_nascimento|add_class:"form-control" }}
-              </div>
-            </div>
-
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label for="id_status" class="form-label">Status</label>
-                {{ form.status|add_class:"form-control" }}
-              </div>
-              <div class="col-md-6">
-                <label for="id_foto" class="form-label">Foto</label>
-                {{ form.foto|add_class:"form-control" }}
-              </div>
-            </div>
-
-            <div class="d-flex justify-content-between mt-4">
-              <a href="{% url 'lista_ovinos' %}" class="btn btn-secondary">Voltar à Lista</a>
-              <button type="submit" class="btn btn-success">Salvar</button>
-            </div>
-          </form>
-        </div>
-      </div>
+    <div>
+        {% if user.is_authenticated %}
+            <span class="me-2">Olá, <strong>{{ user.username }}</strong>!</span>
+            <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Sair</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}" class="btn btn-primary btn-sm">Login</a>
+        {% endif %}
     </div>
-  </div>
+</header>
+
+<div class="container py-4">
+
+    <h3 class="fw-bold text-center mb-4">
+        {% if form.instance.pk %}
+            Editar Animal — {{ form.instance.numero_brinco }}
+        {% else %}
+            Adicionar Novo Animal
+        {% endif %}
+    </h3>
+
+    <div class="card shadow">
+        <div class="row g-0">
+
+            <!-- FOTO -->
+            <div class="col-md-4 text-center p-3 d-flex align-items-center justify-content-center">
+                <div style="position: relative;">
+                    <img 
+                        id="preview" 
+                        src="{% if form.instance.foto %}{{ form.instance.foto.url }}{% else %}https://via.placeholder.com/300x300?text=Sem+Foto{% endif %}" 
+                        class="img-fluid rounded"
+                        alt="Pré-visualização"
+                        style="max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 8px; cursor:pointer;"
+                        onclick="document.getElementById('id_foto').click()"
+                    >
+                </div>
+            </div>
+
+            <!-- FORMULÁRIO -->
+            <div class="col-md-8">
+                <div class="card-body">
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Número Brinco</label>
+                                {{ form.numero_brinco|add_class:"form-control" }}
+                                {% if form.numero_brinco.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.numero_brinco.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Raça</label>
+                                {{ form.raca|add_class:"form-control" }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Sexo</label>
+                                {{ form.sexo|add_class:"form-control" }}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Cor</label>
+                                {{ form.cor|add_class:"form-control" }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Peso Atual</label>
+                                {{ form.peso_atual|add_class:"form-control" }}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Altura</label>
+                                {{ form.altura|add_class:"form-control" }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Peso ao Nascer</label>
+                                {{ form.peso_ao_nascer|add_class:"form-control" }}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Quantidade de Crias</label>
+                                {{ form.quantidade_crias|add_class:"form-control" }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Filiação</label>
+                                {{ form.filiacao|add_class:"form-control" }}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Data de Nascimento</label>
+                                {{ form.data_nascimento|add_class:"form-control" }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Status</label>
+                                {{ form.status|add_class:"form-control" }}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Foto</label>
+                                {{ form.foto|add_class:"form-control" }}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'lista_ovinos' %}" class="btn btn-secondary">Voltar</a>
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
 
 <script>
-  // Atualiza a imagem de pré-visualização ao escolher um novo arquivo
-  document.getElementById("id_foto").addEventListener("change", function(event) {
-    const [file] = event.target.files;
-    if (file) {
-      const preview = document.getElementById("preview");
-      preview.src = URL.createObjectURL(file);
-      preview.style.display = "block";
-    }
-  });
+    document.getElementById("id_foto").addEventListener("change", function(event) {
+        const [file] = event.target.files;
+        if (file) {
+            document.getElementById("preview").src = URL.createObjectURL(file);
+        }
+    });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 
 </body>
 </html>

@@ -143,18 +143,22 @@
     <div class="mt-5">
         <h3 class="fw-bold text-success mb-3">💸 Meus Lances</h3>
 
-        {% if lances %}
-            <ul class="list-group">
-                {% for lance in lances %}
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>
-                            <strong>Lote:</strong> {{ lance.lote.numero_lote }}  
-                            — <strong>R$ {{ lance.valor }}</strong>
-                        </span>
-                        <span class="badge badge-lance">📅 {{ lance.data_hora|date:"d/m/Y H:i" }}</span>
-                    </li>
-                {% endfor %}
-            </ul>
+       {% if lances %}
+    <ul class="list-group">
+        {% for lance in lances|dictsortreversed:"data_hora" %}
+            <li class="list-group-item d-flex justify-content-between">
+                <span>
+                    <strong>Lote:</strong> {{ lance.lote.numero_lote }}  
+                    — <strong>R$ {{ lance.valor }}</strong>
+                </span>
+                <span class="badge badge-lance">
+                    📅 {{ lance.data_hora|date:"d/m/Y H:i" }}
+                </span>
+            </li>
+        {% endfor %}
+    </ul>
+
+
         {% else %}
             <div class="alert alert-info">Você ainda não deu nenhum lance.</div>
         {% endif %}
