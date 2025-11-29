@@ -169,51 +169,46 @@ from .models import LoteLeilao, Lance, AnimalArrematado
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
 def encerrar_leilao(request):
-    if request.method == 'POST':
-        numero_lote = request.POST.get('numero_lote')
 
-        try:
-            # Busca todos os lotes com este número
-            lotes = LoteLeilao.objects.filter(numero_lote=numero_lote)
+    # Busca APENAS lotes que ainda não foram encerrados
+    lotes_ativos = LoteLeilao.objects.filter(encerrado=False)
 
-            if not lotes.exists():
-                messages.error(request, f"Nenhum lote encontrado com o número {numero_lote}.")
-                return redirect('leilao_view')
+    if not lotes_ativos.exists():
+        messages.warning(request, "Nenhum lote disponível para encerrar.")
+        return redirect('leilao_view')
 
-            # Somente lotes não encerrados
-            lotes_ativos = lotes.filter(encerrado=False)
+    try:
+        for lote in lotes_ativos:
+            # Busca o maior lance do lote
+            lance_vencedor = Lance.objects.filter(lote=lote).order_by('-valor').first()
 
-            if not lotes_ativos.exists():
-                messages.warning(request, f"O lote {numero_lote} já está encerrado.")
-                return redirect('leilao_view')
-
-            # PROCESSANDO CADA LOTE ATIVO
-            for lote in lotes_ativos:
-                # maior lance do lote
-                lance_vencedor = Lance.objects.filter(lote=lote).order_by('-valor').first()
-
-                if not lance_vencedor:
-                    messages.warning(request, f"Lote {lote.numero_lote}: nenhum lance registrado.")
-                    continue
-
-                # Criando AnimalArrematado
-                AnimalArrematado.objects.create(
-                    usuario=lance_vencedor.usuario,
-                    lote=lote,
-                    valor_final=lance_vencedor.valor
-                )
-
-                # Encerrando o lote
+            if not lance_vencedor:
+                messages.warning(request, f"Lote {lote.numero_lote}: nenhum lance registrado.")
                 lote.encerrado = True
                 lote.save()
+                continue
 
-            messages.success(request, f"Lote(s) {numero_lote} encerrado(s) e animais registrados!")
+            # Registrar o animal arrematado
+            AnimalArrematado.objects.create(
+                usuario=lance_vencedor.usuario,
+                lote=lote,
+                valor_final=lance_vencedor.valor
+            )
 
-        except Exception as e:
-            messages.error(request, f"Erro ao encerrar lote: {e}")
+            # Encerrar o lote
+            lote.encerrado = True
+            lote.save()
+
+        messages.success(request, "Todos os lotes disponíveis foram encerrados com sucesso!")
+
+    except Exception as e:
+        messages.error(request, f"Erro ao encerrar lotes: {e}")
 
     return redirect('leilao_view')
+
 
 
 
@@ -346,3 +341,34 @@ def perfil(request):
         "animais": animais,
         "profile": profile,
     })
+    
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def encerrar_leilao_individual(request, lote_id):
+    lote = get_object_or_404(LoteLeilao, id=lote_id)
+
+    if lote.encerrado:
+        messages.warning(request, f"O lote {lote.numero_lote} já está encerrado.")
+        return redirect('leilao_view')
+
+    # BUSCAR O MAIOR LANCE
+    lance_vencedor = Lance.objects.filter(lote=lote).order_by('-valor').first()
+
+    if not lance_vencedor:
+        messages.warning(request, f"O lote {lote.numero_lote} não possui lances.")
+    else:
+        # Registrar arremate
+        AnimalArrematado.objects.create(
+            usuario=lance_vencedor.usuario,
+            lote=lote,
+            valor_final=lance_vencedor.valor
+        )
+
+    # Encerrar o lote
+    lote.encerrado = True
+    lote.save()
+
+    messages.success(request, f"Lote {lote.numero_lote} encerrado com sucesso!")
+    return redirect('leilao_view')

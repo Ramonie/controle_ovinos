@@ -26,6 +26,8 @@ urlpatterns = [
     path('atualizar_lance/<int:lote_id>/', views.atualizar_lance, name='atualizar_lance'),
     path("perfil/", views.perfil, name="perfil"),
 
+    path('encerrar_leilao_individual/<int:lote_id>/', views.encerrar_leilao_individual, name='encerrar_leilao_individual'),
+
 
     # 🔹 Verificar número do brinco (AJAX)
     path('verificar-numero-brinco/', views.verificar_numero_brinco, name='verificar_numero_brinco'),

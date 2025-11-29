@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <div class="card border-danger shadow">
+        <div class="card-body text-center">
+
+            <h3 class="text-danger">Encerrar Lote {{ lote.numero_lote }}?</h3>
+            <p>Esta ação não pode ser desfeita.</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <button class="btn btn-danger">Sim, encerrar lote</button>
+                <a href="{% url 'leilao' %}" class="btn btn-secondary">Cancelar</a>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}
