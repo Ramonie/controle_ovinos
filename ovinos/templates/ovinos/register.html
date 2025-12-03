@@ -10,7 +10,7 @@
 <body class="bg-light">
 
 <div class="container mt-5">
-    <a href="{% url 'perfil' %}" class="btn btn-secondary mb-3">⬅ Voltar</a>
+  <a href="{% url 'home' %}" class="btn btn-warning rounded-pill mb-2">🏠 Página Inicial</a>
 
     <div class="card shadow p-4">
         <h2 class="text-success fw-bold mb-4 text-center">👤 Cadastro de Usuário</h2>
@@ -22,19 +22,11 @@
                 <div class="col-md-6 mb-3">
                     {{ form.username.label_tag }}
                     {{ form.username }}
-                </div>
 
-                <div class="col-md-6 mb-3">
                     {{ form.email.label_tag }}
                     {{ form.email }}
-                </div>
-
-                <div class="col-md-6 mb-3">
                     {{ form.password.label_tag }}
                     {{ form.password }}
-                </div>
-
-                <div class="col-md-6 mb-3">
                     {{ form.role.label_tag }}
                     {{ form.role }}
                 </div>
