@@ -52,6 +52,7 @@ venv\Scripts\activate      # Windows
 ### 3️⃣ Instalar as dependências:
 pip install -r requirements.txt
 
+
 ### 4️⃣ Aplicar as migrações e rodar o servidor:
 python manage.py migrate
 python manage.py runserver
