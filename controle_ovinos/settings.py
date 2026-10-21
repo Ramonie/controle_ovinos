@@ -144,3 +144,10 @@ import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+GOVBR_CLIENT_ID = "seu_client_id"
+GOVBR_CLIENT_SECRET = "seu_client_secret"
+GOVBR_REDIRECT_URI = "http://127.0.0.1:8000/govbr/callback/"
+GOVBR_AUTH_URL = "https://sso.acesso.gov.br/authorize"
+GOVBR_TOKEN_URL = "https://sso.acesso.gov.br/token"
+GOVBR_USERINFO_URL = "https://sso.acesso.gov.br/userinfo"

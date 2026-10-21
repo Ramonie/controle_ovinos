@@ -382,3 +382,65 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'ovinos/register.html', {'form': form})
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib.auth.models import User
+from .models import Produtor
+
+import requests
+from django.shortcuts import redirect
+from django.conf import settings
+
+def login_govbr(request):
+    url = (
+        f"{settings.GOVBR_AUTH_URL}"
+        f"?response_type=code"
+        f"&client_id={settings.GOVBR_CLIENT_ID}"
+        f"&redirect_uri={settings.GOVBR_REDIRECT_URI}"
+        f"&scope=openid+profile+email"
+    )
+
+    return redirect(url)
+def callback_govbr(request):
+    code = request.GET.get("code")
+
+    data = {
+        "grant_type": "authorization_code",
+        "code": code,
+        "redirect_uri": settings.GOVBR_REDIRECT_URI,
+        "client_id": settings.GOVBR_CLIENT_ID,
+        "client_secret": settings.GOVBR_CLIENT_SECRET,
+    }
+
+    token_response = requests.post(settings.GOVBR_TOKEN_URL, data=data)
+    token_json = token_response.json()
+
+    access_token = token_json.get("access_token")
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    user_response = requests.get(
+        settings.GOVBR_USERINFO_URL,
+        headers=headers
+    )
+
+    user = user_response.json()
+
+    # 👇 PARTE 5 COMEÇA AQUI (INTEGRAÇÃO COM DJANGO)
+    cpf = user.get("sub")
+
+    django_user, _ = User.objects.get_or_create(username=cpf)
+
+    produtor, _ = Produtor.objects.get_or_create(
+        user=django_user,
+        cpf=cpf,
+        defaults={"nome": user.get("name", "Usuário Gov.br")}
+    )
+
+    login(request, django_user)
+
+    return redirect("/dashboard/")

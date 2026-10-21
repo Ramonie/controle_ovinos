@@ -5,6 +5,9 @@ from django.conf.urls.static import static
 from controle_ovinos import settings
 from . import views
 
+from django.urls import path
+from . import views
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('lista_ovinos', views.lista_ovinos, name='lista_ovinos'),
@@ -16,6 +19,7 @@ urlpatterns = [
     path('relatorios/', views.relatorio_disponiveis, name='relatorio_disponiveis'),
     path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
     path('register/', views.register, name='register'),
+    path('login/', auth_views.LoginView.as_view(template_name='ovinos/login.html'), name='login'),
 
     # 🔹 Página de Leilão e Lances
     path('leilao/', views.leilao_view, name='leilao_view'),
@@ -49,6 +53,11 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
         template_name='ovinos/password_reset_complete.html'
     ), name='password_reset_complete'),
+    
+   path("govbr/login/", views.login_govbr, name="login_govbr"),
+    path("govbr/callback/", views.callback_govbr, name="govbr_callback"),
+
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -34,8 +34,10 @@
             </ul>
         </div>
         <div class="card-body text-center">
+            {% if user.is_superuser %}
             <a href="{% url 'editar_ovino' ovino.pk %}" class="btn btn-primary me-2">Editar</a>
             <a href="{% url 'remover_ovino' ovino.pk %}" class="btn btn-danger ">Remover</a>
+            {% endif %}
             <a href="{% url 'lista_ovinos' %}" class="btn btn-secondary">Voltar à lista</a>
         </div>
     </div>

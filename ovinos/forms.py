@@ -52,32 +52,75 @@ from django import forms
 from .models import LoteLeilao
 
 
+from django import forms
+from django.forms import formset_factory, BaseFormSet
+from .models import Ovino, LoteLeilao
+
+
 class LoteLeilaoForm(forms.ModelForm):
     class Meta:
         model = LoteLeilao
-        fields = ['numero_lote', 'descricao', 'preco_inicial', 'data_leilao', 'foto']
+        fields = [
+            'numero_lote',
+            'descricao',
+            'preco_inicial',
+            'data_leilao',
+            'foto',
+        ]
         widgets = {
-            'numero_lote': forms.TextInput(attrs={'class': 'form-control rounded-pill'}),
-            'descricao': forms.Textarea(attrs={'class': 'form-control rounded-3', 'rows': 3}),
-            'preco_inicial': forms.NumberInput(attrs={'class': 'form-control rounded-pill'}),
-            'data_leilao': forms.DateInput(attrs={'class': 'form-control rounded-pill', 'type': 'date'}),
-            'foto': forms.FileInput(attrs={'class': 'form-control rounded-3'}),
+            'numero_lote': forms.TextInput(
+                attrs={'class': 'form-control rounded-3'}
+            ),
+            'descricao': forms.Textarea(
+                attrs={'class': 'form-control rounded-3', 'rows': 3}
+            ),
+            'preco_inicial': forms.NumberInput(
+                attrs={
+                    'class': 'form-control rounded-3',
+                    'step': '0.01',
+                }
+            ),
+            'data_leilao': forms.DateInput(
+                attrs={
+                    'class': 'form-control rounded-3',
+                    'type': 'date',
+                }
+            ),
+            'foto': forms.ClearableFileInput(
+                attrs={'class': 'form-control rounded-3'}
+            ),
         }
 
-from django import forms
-from .models import LoteLeilao
 
-class LoteLeilaoForm(forms.ModelForm):
-    class Meta:
-        model = LoteLeilao
-        fields = ['numero_lote', 'descricao', 'preco_inicial', 'data_leilao', 'foto']
-def clean_numero_lote(self):
-    numero = self.cleaned_data['numero_lote']
-    if LoteLeilao.objects.filter(numero_lote=numero).exists():
-        raise forms.ValidationError("Já existe um lote com esse número!")
-    return numero
-        
+class BaseOvinoFormSet(BaseFormSet):
+    def clean(self):
+        super().clean()
 
+        if any(self.errors):
+            return
+
+        brincos = []
+
+        for form in self.forms:
+            dados = form.cleaned_data
+            brinco = dados.get('numero_brinco')
+
+            if brinco:
+                if brinco in brincos:
+                    raise forms.ValidationError(
+                        'Não é permitido cadastrar dois animais '
+                        'com o mesmo número de brinco neste lote.'
+                    )
+                brincos.append(brinco)
+
+
+OvinoFormSet = formset_factory(
+    OvinoForm,
+    formset=BaseOvinoFormSet,
+    extra=1,
+    min_num=1,
+    validate_min=True,
+)
 from django import forms
 from .models import Profile
 
