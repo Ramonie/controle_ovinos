@@ -299,9 +299,10 @@ def cadastrar_lote(request):
         form = LoteLeilaoForm()
     
     return render(request, 'ovinos/cadastrar_lote.html', {'form': form})
-
+    
 def home(request):
-    return render(request, 'ovinos/home.html')
+    return leilao_view(request)
+
 
 def verificar_numero_lote(request):
     numero_brinco = request.GET.get('verificar_numero_lote', None)

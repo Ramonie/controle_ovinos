@@ -1,77 +1,363 @@
 
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Cadastrar Usuário</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cadastro de Usuário | AuctionEAJ</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --verde: #087443;
+            --verde-escuro: #004b35;
+            --verde-claro: #e8f5ee;
+            --fundo: #f3f6f8;
+            --texto: #172b3a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--fundo);
+            color: var(--texto);
+            font-family: Arial, Helvetica, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 15px;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 1000px;
+            min-height: 620px;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            box-shadow: 0 15px 45px rgba(0, 50, 30, 0.10);
+        }
+
+        .register-banner {
+            background: linear-gradient(145deg, var(--verde-escuro), var(--verde));
+            color: white;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-banner::before {
+            content: "";
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 50%;
+            right: -130px;
+            bottom: -100px;
+        }
+
+        .brand {
+            font-size: 27px;
+            font-weight: 800;
+        }
+
+        .brand span {
+            color: #a8e6c3;
+        }
+
+        .banner-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .banner-icon {
+            font-size: 65px;
+            color: #c5f2d8;
+            margin-bottom: 20px;
+        }
+
+        .banner-content h1 {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 18px;
+        }
+
+        .banner-content p {
+            color: rgba(255,255,255,0.82);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .banner-footer {
+            font-size: 13px;
+            color: rgba(255,255,255,0.75);
+            position: relative;
+        }
+
+        .register-form-area {
+            padding: 45px 55px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .register-title {
+            margin-bottom: 28px;
+        }
+
+        .register-title h2 {
+            color: var(--verde-escuro);
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .register-title p {
+            color: #75818a;
+            font-size: 14px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #344653;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            height: 49px;
+            border: 1px solid #dce4e8;
+            border-radius: 10px;
+            padding: 12px 15px;
+            background: #fafcfc;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            border-color: var(--verde);
+            box-shadow: 0 0 0 3px rgba(8,116,67,0.10);
+            background: white;
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+
+        .field-error {
+            font-size: 12px;
+            color: #dc3545;
+            margin-top: 6px;
+        }
+
+        .btn-register {
+            height: 50px;
+            background: var(--verde);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .btn-register:hover {
+            background: var(--verde-escuro);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 22px;
+            padding-top: 20px;
+            border-top: 1px solid #edf0f2;
+            color: #75818a;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: var(--verde);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .back-home {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: #75818a;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .back-home:hover {
+            color: var(--verde);
+        }
+
+        @media (max-width: 768px) {
+            .register-container {
+                grid-template-columns: 1fr;
+                max-width: 470px;
+            }
+
+            .register-banner {
+                min-height: 190px;
+                padding: 25px 30px;
+            }
+
+            .banner-content {
+                margin-top: 25px;
+            }
+
+            .banner-content h1 {
+                font-size: 25px;
+            }
+
+            .banner-icon {
+                font-size: 40px;
+                margin-bottom: 10px;
+            }
+
+            .banner-footer {
+                display: none;
+            }
+
+            .register-form-area {
+                padding: 35px 28px;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-light">
+<body>
 
-<div class="container mt-5 mb-5">
+<div class="register-container">
 
-    <a href="{% url 'home' %}" class="btn btn-warning rounded-pill mb-3">
-        🏠 Página Inicial
-    </a>
+    <!-- Painel institucional -->
+    <div class="register-banner">
 
-    <div class="card shadow p-4 mx-auto" style="max-width: 600px;">
-        <h2 class="text-success fw-bold mb-4 text-center">
-            👤 Cadastro de Usuário
-        </h2>
+        <div class="brand">
+            <i class="bi bi-gavel"></i>
+            Auction<span>EAJ</span>
+        </div>
 
-        <form method="post" novalidate>
+        <div class="banner-content">
+            <div class="banner-icon">
+                <i class="bi bi-person-plus"></i>
+            </div>
+
+            <h1>Faça parte do AuctionEAJ!</h1>
+
+            <p>
+                Crie sua conta para acompanhar os animais disponíveis,
+                participar dos leilões e acessar os recursos da plataforma.
+            </p>
+        </div>
+
+        <div class="banner-footer">
+            <i class="bi bi-mortarboard"></i>
+            EAJ - UFRN | Tecnologia a serviço do agronegócio
+        </div>
+
+    </div>
+
+    <!-- Formulário de cadastro -->
+    <div class="register-form-area">
+
+        <div class="register-title">
+            <h2>Criar uma conta</h2>
+            <p>Preencha os campos abaixo para realizar seu cadastro.</p>
+        </div>
+
+        <form method="POST" novalidate>
             {% csrf_token %}
 
             {% if form.non_field_errors %}
                 <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>
                     {% for error in form.non_field_errors %}
-                        <p class="mb-0">{{ error }}</p>
+                        <div>{{ error }}</div>
                     {% endfor %}
                 </div>
             {% endif %}
 
+            <!-- Usuário -->
             <div class="mb-3">
                 <label for="{{ form.username.id_for_label }}" class="form-label">
+                    <i class="bi bi-person me-1"></i>
                     Nome de usuário
                 </label>
+
                 {{ form.username }}
 
                 {% for error in form.username.errors %}
-                    <div class="text-danger small">{{ error }}</div>
+                    <div class="field-error">{{ error }}</div>
                 {% endfor %}
             </div>
 
-
+            <!-- Senha -->
             <div class="mb-3">
                 <label for="{{ form.password1.id_for_label }}" class="form-label">
+                    <i class="bi bi-lock me-1"></i>
                     Senha
                 </label>
+
                 {{ form.password1 }}
 
                 {% for error in form.password1.errors %}
-                    <div class="text-danger small">{{ error }}</div>
+                    <div class="field-error">{{ error }}</div>
                 {% endfor %}
             </div>
 
-            <div class="mb-3">
+            <!-- Confirmação -->
+            <div class="mb-4">
                 <label for="{{ form.password2.id_for_label }}" class="form-label">
-                    Confirme a senha
+                    <i class="bi bi-shield-lock me-1"></i>
+                    Confirmar senha
                 </label>
+
                 {{ form.password2 }}
 
                 {% for error in form.password2.errors %}
-                    <div class="text-danger small">{{ error }}</div>
+                    <div class="field-error">{{ error }}</div>
                 {% endfor %}
             </div>
 
-            <button type="submit" class="btn btn-success w-100 rounded-pill">
-                💾 Cadastrar
+            <button type="submit" class="btn btn-register w-100">
+                <i class="bi bi-person-check me-2"></i>
+                Criar minha conta
             </button>
+
         </form>
+
+        <div class="login-link">
+            Já possui uma conta?
+            <a href="{% url 'login' %}">Faça login</a>
+        </div>
+
+        <a href="{% url 'home' %}" class="back-home">
+            <i class="bi bi-arrow-left me-1"></i>
+            Voltar para a página inicial
+        </a>
+
     </div>
+
 </div>
 
 </body>

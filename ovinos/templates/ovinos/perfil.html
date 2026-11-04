@@ -1,176 +1,762 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Meu Perfil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil | AuctionEAJ</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <style>
-        body { background-color: #f5f5f5; }
-        .profile-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        :root {
+            --verde: #087443;
+            --verde-escuro: #004b35;
+            --verde-claro: #e8f5ee;
+            --fundo: #f3f6f8;
+            --texto: #172b3a;
         }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--fundo);
+            color: var(--texto);
+            font-family: Arial, sans-serif;
+        }
+
+        /* MENU LATERAL */
+
+        .sidebar {
+            width: 230px;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #004b35, #003b2b);
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 30px 15px;
+            z-index: 1000;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 55px;
+            font-size: 25px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .logo span {
+            color: #f5d34b;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            transition: .2s;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: var(--verde);
+        }
+
+        .sidebar a i {
+            font-size: 21px;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 25px;
+            left: 15px;
+            right: 15px;
+            text-align: center;
+            color: #d0e5db;
+            font-size: 13px;
+        }
+
+        /* CONTEÚDO */
+
+        .main-content {
+            margin-left: 230px;
+            padding: 25px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 12px;
+        }
+
+        .topbar-user {
+            font-weight: bold;
+            color: var(--texto);
+        }
+
+        /* CABEÇALHO */
+
+        .page-header {
+            background: linear-gradient(110deg, #005b3c, #16884f);
+            color: white;
+            border-radius: 18px;
+            padding: 28px 35px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.08);
+        }
+
+        .page-header h1 {
+            font-size: 29px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .page-header p {
+            margin: 0;
+            opacity: .9;
+        }
+
+        /* CARDS */
+
+        .content-card {
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 22px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.07);
+        }
+
+        .section-title {
+            font-size: 23px;
+            font-weight: bold;
+            color: var(--verde-escuro);
+            margin-bottom: 22px;
+        }
+
+        /* PERFIL */
+
         .profile-photo {
-            width: 140px;
-            height: 140px;
+            width: 135px;
+            height: 135px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid #198754;
+            border: 4px solid var(--verde);
+            padding: 3px;
+            background: white;
         }
+
+        .profile-name {
+            font-size: 25px;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+
+        .profile-info {
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .role-badge {
+            background: var(--verde);
+            color: white;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: inline-block;
+        }
+
+        .profile-divider {
+            border-right: 1px solid #dce3e8;
+        }
+
+        /* RESUMO */
+
+        .activity-title {
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .activity-box {
+            text-align: center;
+            border-right: 1px solid #dce3e8;
+            padding: 10px;
+        }
+
+        .activity-box:last-child {
+            border: none;
+        }
+
+        .activity-box i {
+            font-size: 27px;
+            color: var(--verde);
+        }
+
+        .activity-box h3 {
+            font-size: 25px;
+            font-weight: bold;
+            margin: 8px 0 3px;
+        }
+
+        .activity-box p {
+            font-size: 13px;
+            margin: 0;
+            color: #64748b;
+        }
+
+        /* FORMULÁRIO */
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        .form-control,
+        .form-select {
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            padding: 11px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--verde);
+            box-shadow: 0 0 0 .2rem rgba(8,116,67,.12);
+        }
+
+        .photo-upload {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 25px 15px;
+            text-align: center;
+            background: #f8fafc;
+            height: 100%;
+        }
+
+        .photo-upload i {
+            font-size: 35px;
+            color: var(--verde);
+        }
+
+        .photo-upload input {
+            margin-top: 12px;
+            font-size: 12px;
+        }
+
+        .btn-save {
+            background: var(--verde);
+            color: white;
+            border: none;
+            padding: 11px 22px;
+            border-radius: 9px;
+            font-weight: bold;
+        }
+
+        .btn-save:hover {
+            background: var(--verde-escuro);
+            color: white;
+        }
+
+        .btn-cancel {
+            border: 1px solid var(--verde);
+            color: var(--verde);
+            background: white;
+            padding: 11px 20px;
+            border-radius: 9px;
+            text-decoration: none;
+        }
+
+        .btn-cancel:hover {
+            background: var(--verde-claro);
+            color: var(--verde-escuro);
+        }
+
+        /* ANIMAIS */
+
         .animal-card {
             background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            transition: 0.2s;
+            border: 1px solid #e5eaf0;
+            border-radius: 14px;
+            padding: 12px;
+            height: 100%;
+            transition: .2s;
         }
+
         .animal-card:hover {
-            transform: scale(1.02);
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0,0,0,.09);
         }
+
         .animal-card img {
-            height: 180px;
             width: 100%;
+            height: 175px;
             object-fit: cover;
             border-radius: 10px;
         }
-        .badge-lance {
-            background: #198754;
+
+        .animal-card h5 {
+            color: var(--verde-escuro);
+            font-weight: bold;
+            margin-top: 13px;
+        }
+
+        .animal-card p {
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .badge-arrematado {
+            background: var(--verde);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        /* LANCES */
+
+        .lance-item {
+            padding: 15px;
+            border-bottom: 1px solid #e5eaf0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lance-item:last-child {
+            border-bottom: none;
+        }
+
+        .lance-data {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .lance-valor {
+            color: var(--verde);
+            font-weight: bold;
+        }
+
+        /* RESPONSIVIDADE */
+
+        @media (max-width: 991px) {
+            .sidebar {
+                width: 75px;
+                padding: 20px 8px;
+            }
+
+            .logo {
+                font-size: 12px;
+            }
+
+            .sidebar a {
+                justify-content: center;
+                font-size: 0;
+                padding: 15px 5px;
+            }
+
+            .sidebar a i {
+                font-size: 23px;
+            }
+
+            .sidebar-footer {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 75px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 12px;
+            }
+
+            .page-header {
+                padding: 22px;
+            }
+
+            .page-header h1 {
+                font-size: 23px;
+            }
+
+            .content-card {
+                padding: 18px;
+            }
+
+            .profile-divider {
+                border-right: none;
+                border-bottom: 1px solid #dce3e8;
+                padding-bottom: 20px;
+                margin-bottom: 20px;
+            }
+
+            .activity-box {
+                border: none;
+                border-bottom: 1px solid #dce3e8;
+            }
+
+            .lance-item {
+                align-items: flex-start;
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="container my-5">
+<!-- MENU LATERAL -->
 
-    <a href="{% url 'leilao_view' %}" class="btn btn-secondary mb-4">🏠 Voltar</a>
+<aside class="sidebar">
 
-</a>
+    <div class="logo">
+        <i class="bi bi-gavel"></i><br>
+        Auction<span>EAJ</span>
+    </div>
+
+    <a href="#perfil" class="active">
+        <i class="bi bi-person-circle"></i>
+        Meu Perfil
+    </a>
+
+    <a href="#lances">
+        <i class="bi bi-hammer"></i>
+        Meus Lances
+    </a>
+
+    <a href="#animais">
+        <i class="bi bi-tag"></i>
+        Animais Arrematados
+    </a>
+
+    <a href="{% url 'leilao_view' %}">
+        <i class="bi bi-arrow-left-circle"></i>
+        Voltar ao Leilão
+    </a>
+
+    <div class="sidebar-footer">
+        <strong>EAJ - UFRN</strong><br>
+        Tecnologia a serviço do agronegócio
+    </div>
+
+</aside>
 
 
+<!-- CONTEÚDO PRINCIPAL -->
+
+<main class="main-content">
+
+    <div class="topbar">
+        <i class="bi bi-bell fs-5"></i>
+        <span class="topbar-user">
+            <i class="bi bi-person-circle fs-5"></i>
+            {{ request.user.username }}
+        </span>
+    </div>
 
 
-    <div class="profile-card">
+    <!-- CABEÇALHO -->
 
-        <h2 class="text-center text-success fw-bold mb-4">👤 Meu Perfil</h2>
+    <section class="page-header">
+        <h1>
+            <i class="bi bi-person-circle"></i>
+            Meu Perfil
+        </h1>
 
-        <div class="row">
-            <div class="col-md-4 text-center">
+        <p>Gerencie suas informações e acompanhe suas atividades no AuctionEAJ.</p>
+    </section>
+
+
+    <!-- RESUMO DO PERFIL -->
+
+    <section class="content-card" id="perfil">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-3 text-center profile-divider">
 
                 {% if profile.photo %}
-                    <img src="{{ profile.photo.url }}" class="profile-photo mb-3">
+                    <img src="{{ profile.photo.url }}" class="profile-photo" alt="Foto do perfil">
                 {% else %}
-                    <img src="https://via.placeholder.com/150?text=Sem+Foto" class="profile-photo mb-3">
+                    <img src="https://via.placeholder.com/150?text=Sem+Foto"
+                         class="profile-photo" alt="Sem foto">
                 {% endif %}
 
-                <h4 class="fw-bold">{{ request.user.username }}</h4>
-                <p class="text-muted">{{ request.user.email }}</p>
+                <div class="profile-name">
+                    {{ request.user.username }}
+                </div>
 
-                <span class="badge bg-success">{{ profile.get_role_display }}</span>
-                <p class="mt-2">
-                    <strong>Telefone:</strong> {{ profile.phone|default:"Não informado" }}
+                <p class="profile-info">
+                    {{ request.user.email }}
+                </p>
+
+                <span class="role-badge">
+                    <i class="bi bi-check-circle"></i>
+                    {{ profile.get_role_display }}
+                </span>
+
+                <p class="mt-3 mb-0">
+                    <strong>Telefone:</strong>
+                    {{ profile.phone|default:"Não informado" }}
                 </p>
 
             </div>
 
-            <div class="col-md-8">
-                <h4 class="fw-bold mb-3">✏️ Editar Informações</h4>
 
-                <form method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
+            <!-- RESUMO DE ATIVIDADES -->
+
+            <div class="col-lg-9 ps-lg-4 mt-4 mt-lg-0">
+
+                <h5 class="activity-title">Resumo de Atividades</h5>
+
+                <div class="row">
+
+                    <div class="col-6 col-md-6 activity-box">
+                        <i class="bi bi-trophy"></i>
+
+                        <h3>{{ lances|length }}</h3>
+
+                        <p>Lances realizados</p>
+                    </div>
+
+                    <div class="col-6 col-md-6 activity-box">
+                        <i class="bi bi-award"></i>
+
+                        <h3>{{ animais|length }}</h3>
+
+                        <p>Animais arrematados</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- EDITAR INFORMAÇÕES -->
+
+    <section class="content-card">
+
+        <h4 class="section-title">
+            <i class="bi bi-gear-fill"></i>
+            Editar Informações
+        </h4>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <div class="row g-4">
+
+                <!-- FOTO -->
+
+                <div class="col-lg-3">
+
+                    <div class="photo-upload">
+
+                        <i class="bi bi-camera-fill"></i>
+
+                        <h6 class="fw-bold mt-2">Alterar Foto</h6>
+
+                        <p class="text-muted small">
+                            PNG, JPG ou JPEG
+                        </p>
+
+                        {{ form.photo }}
+
+                    </div>
+
+                </div>
+
+
+                <!-- CAMPOS -->
+
+                <div class="col-lg-9">
+
                     <div class="row">
+
                         <div class="col-md-6 mb-3">
-                            {{ form.phone.label_tag }}  
+                            {{ form.phone.label_tag }}
                             {{ form.phone }}
                         </div>
-                        <div class="col-md-6 mb-3">
-                            {{ form.photo.label_tag }}
-                            {{ form.photo }}
-                        </div>
+
                         <div class="col-md-6 mb-3">
                             {{ form.role.label_tag }}
                             {{ form.role }}
                         </div>
+
                     </div>
 
-                    <button class="btn btn-success w-100">💾 Salvar Alterações</button>
-                </form>
+                    <div class="d-flex justify-content-end gap-2 mt-3 flex-wrap">
+
+                        <a href="{% url 'leilao_view' %}" class="btn-cancel">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                            Cancelar
+                        </a>
+
+                        <button type="submit" class="btn-save">
+                            <i class="bi bi-save"></i>
+                            Salvar Alterações
+                        </button>
+
+                    </div>
+
+                </div>
+
             </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- ANIMAIS ARREMATADOS -->
+
+    <section class="content-card" id="animais">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+
+            <h4 class="section-title mb-0">
+                <i class="bi bi-trophy-fill"></i>
+                Meus Animais Arrematados
+            </h4>
+
         </div>
-    </div>
 
-    <!-- ========================================================== -->
-    <!-- 🐑 SEÇÃO: OVINOS ARREMATADOS -->
-    <!-- ========================================================== -->
-
-    <div class="mt-5">
-        <h3 class="fw-bold text-success mb-3">🐑 Meus Animais Arrematados</h3>
 
         {% if animais %}
-            <div class="row">
+
+            <div class="row g-3">
+
                 {% for item in animais %}
-                <div class="col-md-4">
-                    <div class="animal-card mb-4">
 
-                        {% if item.lote.foto %}
-                            <img src="{{ item.lote.foto.url }}" alt="Foto do Lote">
-                        {% else %}
-                            <img src="https://via.placeholder.com/300x200?text=Sem+Foto" alt="">
-                        {% endif %}
+                    <div class="col-lg-4 col-md-6">
 
-                        <h5 class="mt-3 fw-bold text-success">Lote {{ item.lote.numero_lote }}</h5>
+                        <div class="animal-card">
 
-                        <p class="mb-1">
-                            <strong>Valor Pago:</strong> R$ {{ item.valor_final }}
-                        </p>
+                            {% if item.lote.foto %}
+                                <img src="{{ item.lote.foto.url }}" alt="Foto do Lote">
+                            {% else %}
+                                <img src="https://via.placeholder.com/300x200?text=Sem+Foto"
+                                     alt="Sem foto">
+                            {% endif %}
 
-                        <p class="text-muted">
-                            <small>Arrematado em: {{ item.data_arremate|date:"d/m/Y H:i" }}</small>
-                        </p>
+                            <h5>
+                                Lote {{ item.lote.numero_lote }}
+                            </h5>
+
+                            <p>
+                                <strong>Valor Pago:</strong>
+                                R$ {{ item.valor_final }}
+                            </p>
+
+                            <span class="badge-arrematado">
+                                <i class="bi bi-check-circle"></i>
+                                Arrematado
+                            </span>
+
+                            <p class="text-muted mt-3 mb-0">
+                                <i class="bi bi-calendar-event"></i>
+                                {{ item.data_arremate|date:"d/m/Y H:i" }}
+                            </p>
+
+                        </div>
+
                     </div>
-                </div>
+
                 {% endfor %}
+
             </div>
-        {% else %}
-            <div class="alert alert-info">Você ainda não arrematou nenhum animal.</div>
-        {% endif %}
-    </div>
-
-
-    <!-- ========================================================== -->
-    <!-- 💸 SEÇÃO: LANCES DO USUÁRIO -->
-    <!-- ========================================================== -->
-
-    <div class="mt-5">
-        <h3 class="fw-bold text-success mb-3">💸 Meus Lances</h3>
-
-       {% if lances %}
-    <ul class="list-group">
-        {% for lance in lances|dictsortreversed:"data_hora" %}
-            <li class="list-group-item d-flex justify-content-between">
-                <span>
-                    <strong>Lote:</strong> {{ lance.lote.numero_lote }}  
-                    — <strong>R$ {{ lance.valor }}</strong>
-                </span>
-                <span class="badge badge-lance">
-                    📅 {{ lance.data_hora|date:"d/m/Y H:i" }}
-                </span>
-            </li>
-        {% endfor %}
-    </ul>
-
 
         {% else %}
-            <div class="alert alert-info">Você ainda não deu nenhum lance.</div>
-        {% endif %}
-    </div>
 
-</div>
+            <div class="alert alert-info mb-0">
+                <i class="bi bi-info-circle"></i>
+                Você ainda não arrematou nenhum animal.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- MEUS LANCES -->
+
+    <section class="content-card" id="lances">
+
+        <h4 class="section-title">
+            <i class="bi bi-hammer"></i>
+            Meus Lances
+        </h4>
+
+        {% if lances %}
+
+            <div class="list-group list-group-flush">
+
+                {% for lance in lances|dictsortreversed:"data_hora" %}
+
+                    <div class="lance-item">
+
+                        <div>
+                            <strong>
+                                Lote {{ lance.lote.numero_lote }}
+                            </strong>
+
+                            <div class="lance-data">
+                                <i class="bi bi-calendar"></i>
+                                {{ lance.data_hora|date:"d/m/Y H:i" }}
+                            </div>
+                        </div>
+
+                        <div class="lance-valor">
+                            R$ {{ lance.valor }}
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="alert alert-info mb-0">
+                <i class="bi bi-info-circle"></i>
+                Você ainda não deu nenhum lance.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <footer class="text-center text-muted py-3">
+        <small>AuctionEAJ - EAJ/UFRN | Sistema de Leilões</small>
+    </footer>
+
+</main>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

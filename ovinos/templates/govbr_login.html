@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Entrar - Gov.br (Fake)</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        /* Top bar */
+        .topbar {
+            background: #1351b4;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Container central */
+        .container {
+            height: calc(100vh - 70px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Card login */
+        .card {
+            background: white;
+            width: 380px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin-bottom: 10px;
+            color: #1351b4;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #1351b4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #0d3f8a;
+        }
+
+        .gov-btn {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #1351b4;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .gov-btn:hover {
+            background: #0d3f8a;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="topbar">
+    Gov.br • Sistema de Ovinos
+</div>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Entrar com Gov.br</h2>
+        <div class="subtitle">
+            Acesso ao sistema de controle de ovinos
+        </div>
+
+        <!-- LOGIN FAKE (CPF) -->
+        <form method="POST" action="/govbr/auth/">
+            {% csrf_token %}
+            <input type="text" name="cpf" placeholder="CPF" required>
+            <input type="password" name="senha" placeholder="Senha (CPF no modo fake)" required>
+
+            <button class="btn" type="submit">
+                Continuar
+            </button>
+        </form>
+
+        <!-- BOTÃO GOV -->
+        <a href="{% url 'login_govbr' %}" class="gov-btn">
+            Entrar com Gov.br
+        </a>
+
+        <div class="footer">
+            Ambiente de desenvolvimento • Modo simulado Gov.br
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

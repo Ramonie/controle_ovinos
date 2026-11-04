@@ -1,94 +1,511 @@
+
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>🐑 AuctionEAJ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AuctionEAJ - Página Inicial</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <style>
+        :root {
+            --verde: #087443;
+            --verde-escuro: #004b35;
+            --verde-claro: #e8f5ee;
+            --fundo: #f3f6f8;
+            --texto: #172b3a;
+        }
+
         body {
-            background-color: #f8f9fa;
+            margin: 0;
+            background: var(--fundo);
+            color: var(--texto);
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
         }
 
-        .card {
+        /* CABEÇALHO */
+
+        .topbar {
+            background: white;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,.05);
+        }
+
+        .logo img {
+            width: 165px;
+            max-height: 75px;
+            object-fit: contain;
+        }
+
+        .topbar-user {
+            color: var(--verde-escuro);
+            font-weight: bold;
+        }
+
+        .btn-login {
+            background: var(--verde);
+            color: white;
+            border-radius: 10px;
+            padding: 10px 18px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn-login:hover {
+            background: var(--verde-escuro);
+            color: white;
+        }
+
+        /* CONTEÚDO */
+
+        .main-content {
+            max-width: 1250px;
+            margin: auto;
+            padding: 35px 25px;
+        }
+
+        /* BANNER */
+
+        .page-header {
+            background: linear-gradient(110deg, #005b3c, #16884f);
+            color: white;
             border-radius: 20px;
-            transition: transform 0.2s ease-in-out;
+            padding: 45px 40px;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.08);
         }
 
-        .card:hover {
-            transform: scale(1.03);
+        .page-header h1 {
+            font-size: 34px;
+            font-weight: bold;
+            margin-bottom: 12px;
         }
 
-        .btn {
-            border-radius: 12px;
+        .page-header p {
+            margin: 0;
+            opacity: .9;
+            font-size: 16px;
+            line-height: 1.6;
         }
 
-        .header {
+        .header-icon {
+            font-size: 65px;
+            opacity: .9;
+        }
+
+        /* TÍTULOS */
+
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--verde-escuro);
+            margin-bottom: 22px;
+        }
+
+        /* CARDS */
+
+        .feature-card {
+            background: white;
+            border-radius: 18px;
+            padding: 32px 25px;
+            height: 100%;
             text-align: center;
-            margin-top: 40px;
-            margin-bottom: 30px;
+            border: 1px solid #e5eaf0;
+            box-shadow: 0 3px 12px rgba(0,0,0,.06);
+            transition: .25s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 9px 22px rgba(0,0,0,.10);
+        }
+
+        .feature-icon {
+            width: 78px;
+            height: 78px;
+            border-radius: 20px;
+            background: var(--verde-claro);
+            color: var(--verde);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 22px;
+        }
+
+        .feature-card h4 {
+            font-size: 21px;
+            font-weight: bold;
+            color: var(--verde-escuro);
+            margin-bottom: 13px;
+        }
+
+        .feature-card p {
+            color: #64748b;
+            font-size: 14px;
+            min-height: 55px;
+            line-height: 1.6;
+        }
+
+        .btn-feature {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-decoration: none;
+            border: none;
+            transition: .2s;
+        }
+
+        .btn-green {
+            background: var(--verde);
+            color: white;
+        }
+
+        .btn-green:hover {
+            background: var(--verde-escuro);
+            color: white;
+        }
+
+        .btn-yellow {
+            background: #f4c542;
+            color: #263238;
+        }
+
+        .btn-yellow:hover {
+            background: #e3b32e;
+            color: #263238;
+        }
+
+        .btn-red {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-red:hover {
+            background: #bb2d3b;
+            color: white;
+        }
+
+        /* INFORMAÇÕES */
+
+        .welcome-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.06);
+            margin-top: 30px;
+        }
+
+        .welcome-card i {
+            color: var(--verde);
+            font-size: 27px;
+        }
+
+        /* RODAPÉ */
+
+        footer {
+            color: #64748b;
+            text-align: center;
+            padding: 30px 15px;
+        }
+
+        /* RESPONSIVIDADE */
+
+        @media (max-width: 576px) {
+            .topbar {
+                padding: 12px 18px;
+            }
+
+            .logo img {
+                width: 125px;
+            }
+
+            .main-content {
+                padding: 22px 15px;
+            }
+
+            .page-header {
+                padding: 28px 22px;
+            }
+
+            .page-header h1 {
+                font-size: 25px;
+            }
+
+            .header-icon {
+                font-size: 40px;
+            }
+
+            .feature-card {
+                padding: 25px 20px;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1>🐑 AuctionEAJ</h1>
-        <p class="text-muted">Gerencie seu rebanho e acesse o leilão de forma simples e rápida</p>
+<!-- CABEÇALHO SUPERIOR -->
+
+<header class="topbar">
+
+    <div class="logo">
+        <img src="{% static 'img/logo_auctioneaj.png' %}"
+             alt="Logo AuctionEAJ">
     </div>
 
-    <div class="row justify-content-center">
-        <!-- Card Lista de Ovinos -->
-        <div class="col-md-4 mb-4">
-            <div class="card shadow text-center p-4">
-                <h4>📋 Lista de animais</h4>
-                <p>Visualize e gerencie todos os animais cadastrados.</p>
-                <a href="{% url 'lista_ovinos' %}" class="btn btn-primary w-100">Acessar</a>
-            </div>
-        </div>
+    <div>
 
-        <!-- Card Página de Leilão -->
-        <div class="col-md-4 mb-4">
-            <div class="card shadow text-center p-4">
-                <h4>💰 Página de Leilão</h4>
-                <p>Consulte os animais disponíveis e suas características antes e durante os leilões.</p>
-                <a href="{% url 'leilao_view' %}" class="btn btn-warning btn-lg rounded-pill">
-    🐏 Ir para o Leilão
-</a>
-            </div>
-        </div>
-
-        <!-- Card Login ou Logout -->
         {% if user.is_authenticated %}
-<div class="col-md-4 mb-4">
-    <div class="card shadow text-center p-4">
-        <h4>👋 Olá, {{ user.username }}</h4>
-        <p>Você está conectado. Deseja sair?</p>
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger w-100">Sair</button>
-        </form>
-    </div>
-</div>
-{% else %}
-<div class="col-md-4 mb-4">
-    <div class="card shadow text-center p-4">
-        <h4>🔐 Login</h4>
-        <p>Entre para acessar as funções disponiveis.</p>
-     <a href="{% url 'login' %}" class="btn btn-primary btn-sm">Login</a>
-       
-    <!---<a href="{% url 'login_govbr' %}" class="btn btn-success w-100">
-    Entrar com Gov.br
-</a>-->
-            
-    </div>
-</div>
-{% endif %}
+
+            <span class="topbar-user">
+                <i class="bi bi-person-circle fs-5"></i>
+                {{ user.username }}
+            </span>
+
+        {% else %}
+
+            <a href="{% url 'login' %}" class="btn-login">
+                <i class="bi bi-box-arrow-in-right"></i>
+                Entrar
+            </a>
+
+        {% endif %}
 
     </div>
-</div>
+
+</header>
+
+
+<!-- CONTEÚDO PRINCIPAL -->
+
+<main class="main-content">
+
+    <!-- BANNER DE APRESENTAÇÃO -->
+
+    <section class="page-header">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-9">
+
+                <h1>
+                    Bem-vindo ao AuctionEAJ!
+                </h1>
+
+                <p>
+                    Gerencie seu rebanho e acesse o leilão
+                    de forma simples, rápida e organizada.
+                </p>
+
+            </div>
+
+            <div class="col-md-3 text-center d-none d-md-block">
+
+                <i class="bi bi-shop-window header-icon"></i>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FUNCIONALIDADES -->
+
+    <section>
+
+        <h4 class="section-title">
+            <i class="bi bi-grid-fill"></i>
+            Acesse as funcionalidades
+        </h4>
+
+        <div class="row g-4">
+
+            <!-- LISTA DE ANIMAIS -->
+
+            <div class="col-lg-4 col-md-6">
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        <i class="bi bi-list-ul"></i>
+                    </div>
+
+                    <h4>Lista de Animais</h4>
+
+                    <p>
+                        Visualize e gerencie todos os animais
+                        cadastrados no sistema.
+                    </p>
+
+                    <a href="{% url 'lista_ovinos' %}"
+                       class="btn-feature btn-green">
+
+                        <i class="bi bi-arrow-right-circle"></i>
+                        Acessar
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- LEILÃO -->
+
+            <div class="col-lg-4 col-md-6">
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        <i class="bi bi-hammer"></i>
+                    </div>
+
+                    <h4>Página de Leilão</h4>
+
+                    <p>
+                        Consulte os animais disponíveis,
+                        acompanhe os valores e participe dos leilões.
+                    </p>
+
+                    <a href="{% url 'leilao_view' %}"
+                       class="btn-feature btn-yellow">
+
+                        <i class="bi bi-gavel"></i>
+                        Ir para o Leilão
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- LOGIN / PERFIL -->
+
+            <div class="col-lg-4 col-md-6">
+
+                <div class="feature-card">
+
+                    {% if user.is_authenticated %}
+
+                        <div class="feature-icon">
+                            <i class="bi bi-person-check"></i>
+                        </div>
+
+                        <h4>Olá, {{ user.username }}!</h4>
+
+                        <p>
+                            Você está conectado ao AuctionEAJ.
+                            Acesse seu perfil para gerenciar suas informações.
+                        </p>
+
+                        <a href="{% url 'perfil' %}"
+                           class="btn-feature btn-green mb-2">
+
+                            <i class="bi bi-person-circle"></i>
+                            Meu Perfil
+
+                        </a>
+
+                        <form method="post" action="{% url 'logout' %}">
+
+                            {% csrf_token %}
+
+                            <button type="submit" class="btn-feature btn-red">
+
+                                <i class="bi bi-box-arrow-right"></i>
+                                Sair
+
+                            </button>
+
+                        </form>
+
+                    {% else %}
+
+                        <div class="feature-icon">
+                            <i class="bi bi-person-lock"></i>
+                        </div>
+
+                        <h4>Área do Usuário</h4>
+
+                        <p>
+                            Entre na plataforma para acessar
+                            as funcionalidades disponíveis.
+                        </p>
+
+                        <a href="{% url 'login' %}"
+                           class="btn-feature btn-green">
+
+                            <i class="bi bi-box-arrow-in-right"></i>
+                            Fazer Login
+
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- INFORMAÇÕES -->
+
+    <section class="welcome-card">
+
+        <div class="d-flex align-items-center gap-3">
+
+            <i class="bi bi-info-circle-fill"></i>
+
+            <div>
+
+                <h5 class="fw-bold mb-1">
+                    AuctionEAJ - EAJ/UFRN
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Plataforma de gerenciamento de animais
+                    e realização de leilões.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- RODAPÉ -->
+
+    <footer>
+
+        <small>
+            AuctionEAJ - Escola Agrícola de Jundiaí / UFRN
+            <br>
+            Sistema de Gerenciamento de Animais e Leilões
+        </small>
+
+    </footer>
+
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
- 
