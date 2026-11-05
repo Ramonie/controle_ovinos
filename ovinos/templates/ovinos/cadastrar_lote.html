@@ -107,7 +107,7 @@
             box-shadow: 0 0 0 .2rem rgba(8,116,67,.12);
         }
 
-        /* Pré-visualização */
+        /* Pré-visualização da foto */
         .photo-area {
             background: var(--verde-claro);
             border: 2px dashed #a5cbb5;
@@ -133,6 +133,67 @@
             margin-top: 12px;
         }
 
+        /* Seleção dos animais */
+        .animal-selection {
+            background: #f8fbf9;
+            border: 1px solid #dce9e0;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .animal-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+        }
+
+        .animal-option {
+            background: white;
+            border: 1px solid #dce5df;
+            border-radius: 10px;
+            padding: 12px;
+            transition: .2s;
+        }
+
+        .animal-option:hover {
+            border-color: var(--verde);
+            background: var(--verde-claro);
+        }
+
+        .animal-option label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--texto);
+        }
+
+        .animal-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--verde);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .animal-help {
+            color: #718096;
+            font-size: 13px;
+        }
+
+        .animal-count {
+            display: inline-block;
+            background: var(--verde-claro);
+            color: var(--verde-escuro);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Botões */
         .btn {
             border-radius: 10px;
             padding: 11px 18px;
@@ -184,6 +245,10 @@
             .form-card {
                 padding: 20px;
             }
+
+            .animal-list {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -216,6 +281,23 @@
             Preencha as informações abaixo para adicionar um lote ao leilão.
         </p>
     </div>
+
+    <!-- Mensagens -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Erros gerais -->
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
 
     <!-- Formulário -->
     <div class="form-card">
@@ -251,6 +333,7 @@
                     </div>
 
                     <div class="mt-3">
+
                         <label for="id_foto" class="form-label">
                             Selecionar imagem
                         </label>
@@ -262,6 +345,7 @@
                                 {{ form.foto.errors }}
                             </div>
                         {% endif %}
+
                     </div>
 
                 </div>
@@ -274,6 +358,7 @@
                     </h5>
 
                     <div class="mb-3">
+
                         <label class="form-label" for="{{ form.numero_lote.id_for_label }}">
                             Número do Lote
                         </label>
@@ -285,9 +370,11 @@
                                 {{ form.numero_lote.errors }}
                             </div>
                         {% endif %}
+
                     </div>
 
                     <div class="mb-3">
+
                         <label class="form-label" for="{{ form.descricao.id_for_label }}">
                             Descrição
                         </label>
@@ -299,9 +386,11 @@
                                 {{ form.descricao.errors }}
                             </div>
                         {% endif %}
+
                     </div>
 
                     <div class="mb-3">
+
                         <label class="form-label" for="{{ form.preco_inicial.id_for_label }}">
                             Preço Inicial (R$)
                         </label>
@@ -313,9 +402,11 @@
                                 {{ form.preco_inicial.errors }}
                             </div>
                         {% endif %}
+
                     </div>
 
                     <div class="mb-3">
+
                         <label class="form-label" for="{{ form.data_leilao.id_for_label }}">
                             Data do Leilão
                         </label>
@@ -327,7 +418,82 @@
                                 {{ form.data_leilao.errors }}
                             </div>
                         {% endif %}
+
                     </div>
+
+                </div>
+
+            </div>
+
+            <!-- Seleção dos animais -->
+            <div class="mt-4">
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+
+                    <h5 class="section-title mb-0">
+                        <i class="bi bi-list-check"></i>
+                        Animais que farão parte do lote
+                    </h5>
+
+                    <span class="animal-count">
+                        <span id="contadorAnimais">0</span> selecionado(s)
+                    </span>
+
+                </div>
+
+                <p class="animal-help">
+                    Selecione um ou mais ovinos disponíveis para participar deste lote.
+                </p>
+
+                <div class="animal-selection">
+
+                    {% if form.ovinos.field.queryset.exists %}
+
+                        <div class="animal-list">
+
+                            {% for checkbox in form.ovinos %}
+
+                                <div class="animal-option">
+
+                                    <label for="{{ checkbox.id_for_label }}">
+
+                                        {{ checkbox.tag }}
+
+                                        <span>
+                                            {{ checkbox.choice_label }}
+                                        </span>
+
+                                    </label>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="text-center py-3">
+
+                            <i class="bi bi-info-circle text-success fs-3"></i>
+
+                            <p class="mb-0 mt-2">
+                                Nenhum animal disponível para seleção.
+                            </p>
+
+                            <small class="text-muted">
+                                Cadastre animais ou altere o status dos animais existentes para Disponível.
+                            </small>
+
+                        </div>
+
+                    {% endif %}
+
+                    {% if form.ovinos.errors %}
+                        <div class="text-danger small mt-3">
+                            {{ form.ovinos.errors }}
+                        </div>
+                    {% endif %}
 
                 </div>
 
@@ -363,25 +529,51 @@
     const inputFoto = document.getElementById("id_foto");
     const preview = document.getElementById("preview");
 
-    inputFoto.addEventListener("change", function(event) {
-        const file = event.target.files[0];
+    if (inputFoto) {
+        inputFoto.addEventListener("change", function(event) {
 
-        if (file) {
-            if (!file.type.startsWith("image/")) {
-                alert("Selecione um arquivo de imagem válido.");
-                inputFoto.value = "";
-                return;
+            const file = event.target.files[0];
+
+            if (file) {
+
+                if (!file.type.startsWith("image/")) {
+                    alert("Selecione um arquivo de imagem válido.");
+                    inputFoto.value = "";
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                };
+
+                reader.readAsDataURL(file);
             }
+        });
+    }
 
-            const reader = new FileReader();
+    // Contador de animais selecionados
+    const checkboxesAnimais = document.querySelectorAll(
+        'input[name="ovinos"]'
+    );
 
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-            };
+    const contadorAnimais = document.getElementById("contadorAnimais");
 
-            reader.readAsDataURL(file);
-        }
+    function atualizarContador() {
+
+        const selecionados = document.querySelectorAll(
+            'input[name="ovinos"]:checked'
+        ).length;
+
+        contadorAnimais.textContent = selecionados;
+    }
+
+    checkboxesAnimais.forEach(function(checkbox) {
+        checkbox.addEventListener("change", atualizarContador);
     });
+
+    atualizarContador();
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

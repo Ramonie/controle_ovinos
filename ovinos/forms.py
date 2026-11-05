@@ -58,6 +58,16 @@ from .models import Ovino, LoteLeilao
 
 
 class LoteLeilaoForm(forms.ModelForm):
+
+    ovinos = forms.ModelMultipleChoiceField(
+        queryset=Ovino.objects.filter(status='Disponível').order_by('numero_brinco'),
+        required=False,
+        label='Selecionar animais para o lote',
+        widget=forms.CheckboxSelectMultiple(
+            attrs={'class': 'form-check-input'}
+        )
+    )
+
     class Meta:
         model = LoteLeilao
         fields = [
@@ -66,7 +76,9 @@ class LoteLeilaoForm(forms.ModelForm):
             'preco_inicial',
             'data_leilao',
             'foto',
+            'ovinos',
         ]
+
         widgets = {
             'numero_lote': forms.TextInput(
                 attrs={'class': 'form-control rounded-3'}

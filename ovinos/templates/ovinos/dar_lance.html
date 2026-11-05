@@ -1,47 +1,619 @@
+
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Dar Lance - {{ lote.numero_lote }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dar Lance | AuctionEAJ</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
     <style>
-        body { background-color: #f8f9fa; }
-        .card { border-radius: 15px; padding: 30px; }
-        .btn-lance { width: 100%; margin-bottom: 10px; border-radius: 25px; }
+        :root {
+            --verde: #087443;
+            --verde-escuro: #004b35;
+            --verde-claro: #e8f5ee;
+            --fundo: #f3f6f8;
+            --texto: #172b3a;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: var(--fundo);
+            color: var(--texto);
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 15px;
+        }
+
+        .main-container {
+            max-width: 1120px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 13px;
+            margin-bottom: 15px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            background: var(--verde-claro);
+            color: var(--verde);
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+        }
+
+        .header h1 {
+            color: var(--verde-escuro);
+            font-size: 23px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .header p {
+            color: #75818a;
+            font-size: 12px;
+            margin: 3px 0 0;
+        }
+
+        .auction-card {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 50, 30, .07);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.05fr .95fr;
+            gap: 22px;
+            align-items: start;
+        }
+
+        .section-title {
+            color: var(--verde-escuro);
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .info-box {
+            background: #f8faf9;
+            border: 1px solid #e8efeb;
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 14px;
+        }
+
+        .info-item {
+            margin-bottom: 9px;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            color: #75818a;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            color: var(--texto);
+            font-size: 13px;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+
+        /* Fotos dos animais */
+
+        .animal-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .animal-card {
+            border: 1px solid #e8efeb;
+            border-radius: 11px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .animal-photo {
+            width: 100%;
+            height: 105px;
+            object-fit: cover;
+            cursor: pointer;
+            background: #f1f3f4;
+        }
+
+        .animal-info {
+            padding: 7px 9px;
+        }
+
+        .animal-info strong {
+            display: block;
+            color: var(--verde-escuro);
+            font-size: 11px;
+        }
+
+        .animal-info small {
+            display: block;
+            color: #75818a;
+            font-size: 10px;
+        }
+
+        .no-photo {
+            height: 105px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #89949a;
+            background: #f1f3f4;
+            font-size: 11px;
+        }
+
+        .no-photo i { font-size: 24px; }
+
+        .no-animals {
+            background: #f8f9fa;
+            border: 1px dashed #ced4da;
+            border-radius: 10px;
+            padding: 13px;
+            text-align: center;
+            color: #75818a;
+            font-size: 12px;
+        }
+
+        /* Último lance */
+
+        .last-bid {
+            background: var(--verde-claro);
+            border: 1px solid #ccebd8;
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 14px;
+        }
+
+        .last-bid-label {
+            color: var(--verde-escuro);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .last-bid-value {
+            color: var(--verde);
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .last-bid-user {
+            color: #547363;
+            font-size: 11px;
+        }
+
+        .no-bid {
+            background: #f8f9fa;
+            border: 1px dashed #ced4da;
+            border-radius: 12px;
+            padding: 13px;
+            text-align: center;
+            color: #75818a;
+            font-size: 12px;
+            margin-bottom: 14px;
+        }
+
+        /* Área de lances */
+
+        .bid-panel {
+            background: #f8faf9;
+            border: 1px solid #e8efeb;
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .bid-description {
+            color: #75818a;
+            font-size: 11px;
+            margin-bottom: 12px;
+        }
+
+        .bid-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 9px;
+        }
+
+        .btn-bid {
+            width: 100%;
+            min-height: 45px;
+            border: none;
+            border-radius: 9px;
+            background: var(--verde);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 9px 5px;
+            transition: .2s;
+        }
+
+        .btn-bid:hover {
+            background: var(--verde-escuro);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .custom-bid {
+            border-top: 1px solid #e0e9e3;
+            margin-top: 15px;
+            padding-top: 14px;
+        }
+
+        .custom-bid label {
+            color: var(--verde-escuro);
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .custom-bid input {
+            min-height: 43px;
+            border-radius: 9px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .custom-bid small {
+            font-size: 10px;
+        }
+
+        .btn-custom {
+            width: 100%;
+            min-height: 43px;
+            border: none;
+            border-radius: 9px;
+            background: var(--verde-escuro);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 9px;
+        }
+
+        .btn-custom:hover {
+            background: var(--verde);
+            color: white;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 9px 18px;
+            background: #eef1f3;
+            color: #43515a;
+            text-decoration: none;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 14px;
+        }
+
+        .btn-back:hover {
+            background: #dfe5e8;
+            color: var(--texto);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 12px;
+            color: #8a969d;
+            font-size: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                justify-content: flex-start;
+            }
+
+            .auction-card {
+                padding: 15px;
+            }
+
+            .animal-gallery {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 400px) {
+            .animal-gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .bid-options {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
     </style>
 </head>
-<body>
-<div class="container mt-5">
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-success">Dar Lance no {{ lote.numero_lote }}</h2>
-        <p class="text-muted">Escolha uma das opções de lance abaixo:</p>
-    </div>
 
-    <div class="card shadow-sm">
-        <div class="mb-3">
-            <p><strong>Descrição:</strong> {{ lote.descricao }}</p>
-            <p><strong>Valor inicial:</strong> R$ {{ lote.preco_inicial }}</p>
-            {% if ultimo_lance %}
-                <p><strong>Último lance:</strong> R$ {{ ultimo_lance.valor }} por {{ ultimo_lance.usuario.username }}</p>
-            {% else %}
-                <p><strong>Nenhum lance ainda.</strong></p>
-            {% endif %}
+<body>
+
+<div class="main-container">
+
+    <!-- CABEÇALHO -->
+    <div class="header">
+        <div class="header-icon">
+            <i class="bi bi-hammer"></i>
         </div>
 
-        <form method="post">
-            {% csrf_token %}
-            {% for valor in opcoes_lances %}
-                <button type="submit" name="valor" value="{{ valor }}" class="btn btn-success btn-lance">
-                    💰 Lance de R$ {{ valor }}
-                </button>
-            {% endfor %}
-        </form>
+        <div>
+            <h1>Participar do Leilão</h1>
+            <p>Confira o lote e faça sua oferta.</p>
+        </div>
+    </div>
 
-        <div class="text-center mt-4">
-            <a href="{% url 'leilao_view' %}" class="btn btn-secondary rounded-pill">⬅️ Voltar ao Leilão</a>
+    <div class="auction-card">
+
+        <div class="content-grid">
+
+            <!-- COLUNA ESQUERDA: INFORMAÇÕES E ANIMAIS -->
+            <div>
+
+                <h5 class="section-title">
+                    <i class="bi bi-card-list me-1"></i>
+                    Informações do lote {{ lote.numero_lote }}
+                </h5>
+
+                <div class="info-box">
+
+                    <div class="info-item">
+                        <div class="info-label">Número do lote</div>
+                        <div class="info-value">{{ lote.numero_lote }}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Descrição</div>
+                        <div class="info-value">{{ lote.descricao }}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Valor inicial</div>
+                        <div class="info-value">
+                            R$ {{ lote.preco_inicial|floatformat:2 }}
+                        </div>
+                    </div>
+
+                </div>
+
+                <h5 class="section-title">
+                    <i class="bi bi-images me-1"></i>
+                    Animais deste lote
+                </h5>
+
+                <div class="animal-gallery">
+
+                    {% for ovino in lote.ovinos.all %}
+
+                        <div class="animal-card">
+
+                            {% if ovino.foto %}
+                                <img
+                                    src="{{ ovino.foto.url }}"
+                                    alt="Ovino {{ ovino.numero_brinco }}"
+                                    class="animal-photo"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#fotoModal"
+                                    onclick="mostrarFoto(this.src, this.alt)">
+                            {% else %}
+                                <div class="no-photo">
+                                    <i class="bi bi-camera"></i>
+                                    Sem foto
+                                </div>
+                            {% endif %}
+
+                            <div class="animal-info">
+                                <strong>Brinco: {{ ovino.numero_brinco }}</strong>
+                                <small>{{ ovino.raca }}</small>
+                                <small>{{ ovino.get_sexo_display }}</small>
+                            </div>
+
+                        </div>
+
+                    {% empty %}
+
+                        <div class="no-animals">
+                            <i class="bi bi-info-circle"></i>
+                            Nenhum animal associado a este lote.
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <!-- ÚLTIMO LANCE -->
+                {% if ultimo_lance %}
+
+                    <div class="last-bid">
+                        <div class="last-bid-label">
+                            <i class="bi bi-trophy-fill me-1"></i>
+                            Último lance registrado
+                        </div>
+
+                        <div class="last-bid-value">
+                            R$ {{ ultimo_lance.valor|floatformat:2 }}
+                        </div>
+
+                        <div class="last-bid-user">
+                            <i class="bi bi-person-circle me-1"></i>
+                            Ofertado por {{ ultimo_lance.usuario.username }}
+                        </div>
+                    </div>
+
+                {% else %}
+
+                    <div class="no-bid">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Nenhum lance registrado. Seja o primeiro!
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+            <!-- COLUNA DIREITA: OPÇÕES DE LANCE -->
+            <div>
+
+                <div class="bid-panel">
+
+                    <h5 class="section-title">
+                        <i class="bi bi-cash-coin me-1"></i>
+                        Escolha seu lance
+                    </h5>
+
+                    <p class="bid-description">
+                        Selecione um dos valores disponíveis:
+                    </p>
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="bid-options">
+
+                            {% for valor in opcoes_lances %}
+
+                                <button
+                                    type="submit"
+                                    name="valor"
+                                    value="{{ valor }}"
+                                    class="btn-bid">
+
+                                    <i class="bi bi-currency-dollar"></i>
+                                    R$ {{ valor|floatformat:2 }}
+
+                                </button>
+
+                            {% empty %}
+
+                                <div class="alert alert-warning small">
+                                    Não existem opções de lance disponíveis.
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+                    </form>
+
+                    <!-- LANCE PERSONALIZADO -->
+                    <div class="custom-bid">
+
+                        <h6 class="section-title mb-2">
+                            <i class="bi bi-pencil-square me-1"></i>
+                            Outro valor
+                        </h6>
+
+                        <form method="POST">
+                            {% csrf_token %}
+
+                            <label for="valor_personalizado">
+                                Digite seu lance (R$)
+                            </label>
+
+                            <input
+                                type="number"
+                                name="valor"
+                                id="valor_personalizado"
+                                class="form-control"
+                                placeholder="Ex.: 750.00"
+                                min="{{ ultimo_lance.valor|default:lote.preco_inicial }}"
+                                step="0.01"
+                                required>
+
+                            <small class="text-muted d-block mt-2">
+                                O valor deve superar o último lance e respeitar
+                                o preço inicial do lote.
+                            </small>
+
+                            <button type="submit" class="btn-custom">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Confirmar lance
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+                <div class="text-center">
+                    <a href="{% url 'leilao_view' %}" class="btn-back">
+                        <i class="bi bi-arrow-left"></i>
+                        Voltar ao Leilão
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+        AuctionEAJ | EAJ - UFRN
+        <br>
+        Tecnologia a serviço do agronegócio
+    </div>
+
+</div>
+
+<!-- MODAL DA FOTO -->
+<div class="modal fade" id="fotoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Foto do animal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <img id="fotoAmpliada" src="" alt="" class="img-fluid rounded">
+            </div>
+
         </div>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function mostrarFoto(src, alt) {
+        document.getElementById('fotoAmpliada').src = src;
+        document.getElementById('fotoAmpliada').alt = alt;
+    }
+</script>
+
 </body>
 </html>

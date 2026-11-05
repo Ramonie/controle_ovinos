@@ -721,41 +721,60 @@
                                 </div>
 
 
-                                <!-- BOTÕES -->
+                               <!-- BOTÕES -->
 
-                                {% if lote.encerrado %}
+{% if lote.encerrado %}
 
-                                    <button class="btn-disabled" disabled>
-                                        <i class="bi bi-lock-fill"></i>
-                                        Lances Encerrados
-                                    </button>
+    {% if user.is_superuser %}
 
-                                {% else %}
+        <form method="POST"
+              action="{% url 'reabrir_lote' lote.id %}"
+              onsubmit="return confirm('Deseja realmente reabrir o lote {{ lote.numero_lote }}? Os participantes poderão voltar a dar lances.');">
 
-                                    {% if user.is_superuser %}
+            {% csrf_token %}
 
-                                        <button
-                                            class="btn-encerrar"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modalEncerrar{{ lote.id }}"
-                                        >
-                                            <i class="bi bi-x-circle"></i>
-                                            Encerrar Lote
-                                        </button>
+            <button type="submit" class="btn btn-success w-100">
+                <i class="bi bi-unlock-fill"></i>
+                Reabrir Lote
+            </button>
 
-                                    {% else %}
+        </form>
 
-                                        <a
-                                            href="{% url 'dar_lance' lote.id %}"
-                                            class="btn btn-lance"
-                                        >
-                                            <i class="bi bi-hammer"></i>
-                                            Dar Lance
-                                        </a>
+    {% else %}
 
-                                    {% endif %}
+        <button class="btn-disabled" disabled>
+            <i class="bi bi-lock-fill"></i>
+            Lances Encerrados
+        </button>
 
-                                {% endif %}
+    {% endif %}
+
+{% else %}
+
+    {% if user.is_superuser %}
+
+        <button
+            class="btn-encerrar"
+            data-bs-toggle="modal"
+            data-bs-target="#modalEncerrar{{ lote.id }}"
+        >
+            <i class="bi bi-x-circle"></i>
+            Encerrar Lote
+        </button>
+
+    {% else %}
+
+        <a
+            href="{% url 'dar_lance' lote.id %}"
+            class="btn btn-lance"
+        >
+            <i class="bi bi-hammer"></i>
+            Dar Lance
+        </a>
+
+    {% endif %}
+
+{% endif %}
 
                             </div>
 
@@ -943,7 +962,6 @@
 <script>
 
     setInterval(() => {
-
         {% for lote in lotes %}
 
             fetch(`/atualizar_lance/{{ lote.id }}/`)

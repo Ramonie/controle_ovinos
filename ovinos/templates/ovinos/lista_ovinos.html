@@ -143,8 +143,9 @@
         .animal-info {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             gap: 10px;
-            padding: 7px 0;
+            padding: 9px 0;
             border-bottom: 1px solid #edf0ee;
             font-size: 14px;
         }
@@ -170,6 +171,16 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: 700;
+        }
+
+        .buyer-info {
+            margin-top: 9px;
+            padding: 9px 11px;
+            background: var(--verde-claro);
+            border-radius: 9px;
+            color: var(--verde-escuro);
+            font-size: 13px;
+            text-align: left;
         }
 
         .card-footer {
@@ -225,62 +236,93 @@
 
 <body>
 
-<!-- Cabeçalho -->
+<!-- =====================================================
+     CABEÇALHO
+===================================================== -->
+
 <header class="topbar">
 
     <a href="{% url 'home' %}" class="brand">
-        <img src="{% static 'img/logo_auctioneaj.png' %}" alt="Logo AuctionEAJ">
+
+        <img src="{% static 'img/logo_auctioneaj.png' %}"
+             alt="Logo AuctionEAJ">
+
         <h2>AuctionEAJ</h2>
+
     </a>
 
     <div class="d-flex align-items-center gap-2">
+
         {% if user.is_authenticated %}
+
             <span class="header-user me-2">
                 Olá, <strong>{{ user.username }}</strong>!
             </span>
 
             <form action="{% url 'logout' %}" method="post">
                 {% csrf_token %}
+
                 <button type="submit" class="btn btn-danger btn-sm">
                     <i class="bi bi-box-arrow-right"></i> Sair
                 </button>
             </form>
+
         {% else %}
+
             <a href="{% url 'login' %}" class="btn btn-green btn-sm">
                 <i class="bi bi-person"></i> Login
             </a>
+
         {% endif %}
+
     </div>
 
 </header>
 
+
 <main class="main-container">
 
-    <!-- Título -->
+    <!-- =================================================
+         TÍTULO
+    ================================================== -->
+
     <div class="mb-4">
+
         {% if user.is_authenticated %}
+
             <h2 class="page-title">
                 <i class="bi bi-search"></i> Consultar Animais
             </h2>
+
             <p class="page-subtitle">
                 Consulte os animais cadastrados no sistema AuctionEAJ.
             </p>
+
         {% else %}
+
             <h2 class="page-title">
                 <i class="bi bi-sheep"></i> Lista de Animais
             </h2>
+
             <p class="page-subtitle">
                 Conheça os animais disponíveis no sistema.
             </p>
+
         {% endif %}
+
     </div>
 
-    <!-- Pesquisa e ações -->
+
+    <!-- =================================================
+         PESQUISA E AÇÕES
+    ================================================== -->
+
     <div class="search-card">
 
         <form method="GET" class="row g-3 align-items-center">
 
             <div class="col-lg-6 col-md-12">
+
                 <input
                     type="text"
                     name="q"
@@ -288,120 +330,273 @@
                     placeholder="Buscar por brinco ou filiação..."
                     value="{{ request.GET.q }}"
                 >
+
             </div>
 
             <div class="col-lg-2 col-md-4 col-12">
+
                 <button type="submit" class="btn btn-green w-100">
                     <i class="bi bi-search"></i> Buscar
                 </button>
+
             </div>
 
             {% if user.is_superuser %}
-            <div class="col-lg-2 col-md-4 col-12">
-                <a href="{% url 'adicionar_ovino' %}" class="btn btn-success w-100">
-                    <i class="bi bi-plus-circle"></i> Adicionar
-                </a>
-            </div>
+
+                <div class="col-lg-2 col-md-4 col-12">
+
+                    <a href="{% url 'adicionar_ovino' %}"
+                       class="btn btn-success w-100">
+
+                        <i class="bi bi-plus-circle"></i> Adicionar
+
+                    </a>
+
+                </div>
+
             {% endif %}
 
             <div class="col-lg-2 col-md-4 col-12">
-                <a href="{% url 'home' %}" class="btn btn-outline-secondary w-100">
+
+                <a href="{% url 'home' %}"
+                   class="btn btn-outline-secondary w-100">
+
                     <i class="bi bi-house"></i> Início
+
                 </a>
+
             </div>
 
         </form>
+
     </div>
 
-    <!-- Listagem de animais -->
+
+    <!-- =================================================
+         LISTAGEM DE ANIMAIS
+    ================================================== -->
+
     <div class="row g-4">
 
         {% for ovino in ovinos %}
 
-        <div class="col-xl-4 col-md-6 col-12">
+            <div class="col-xl-4 col-md-6 col-12">
 
-            <div class="card animal-card">
+                <div class="card animal-card">
 
-                {% if ovino.foto %}
-                    <img src="{{ ovino.foto.url }}"
-                         class="animal-image"
-                         alt="Foto do ovino {{ ovino.numero_brinco }}">
-                {% else %}
-                    <div class="animal-image d-flex flex-column justify-content-center align-items-center">
-                        <i class="bi bi-image fs-1 text-success"></i>
-                        <span class="text-muted small mt-2">Sem foto cadastrada</span>
-                    </div>
-                {% endif %}
+                    <!-- FOTO DO ANIMAL -->
 
-                <div class="card-body">
+                    {% if ovino.foto %}
 
-                    <h5 class="animal-title">
-                        <i class="bi bi-tag"></i>
-                        {{ ovino.numero_brinco }} — {{ ovino.raca }}
-                    </h5>
+                        <img
+                            src="{{ ovino.foto.url }}"
+                            class="animal-image"
+                            alt="Foto do ovino {{ ovino.numero_brinco }}"
+                        >
 
-                    <div class="animal-info">
-                        <strong><i class="bi bi-gender-ambiguous"></i> Sexo</strong>
-                        <span>{{ ovino.sexo }}</span>
-                    </div>
+                    {% else %}
 
-                    <div class="animal-info">
-                        <strong><i class="bi bi-palette"></i> Cor</strong>
-                        <span>{{ ovino.cor }}</span>
-                    </div>
+                        <div class="animal-image d-flex flex-column justify-content-center align-items-center">
 
-                    <div class="animal-info">
-                        <strong><i class="bi bi-speedometer2"></i> Peso</strong>
-                        <span>{{ ovino.peso_atual }} kg</span>
-                    </div>
+                            <i class="bi bi-image fs-1 text-success"></i>
 
-                    <div class="animal-info">
-                        <strong><i class="bi bi-info-circle"></i> Status</strong>
-                        <span>
-                            <span class="status">{{ ovino.status }}</span>
-                        </span>
-                    </div>
+                            <span class="text-muted small mt-2">
+                                Sem foto cadastrada
+                            </span>
 
-                </div>
-
-                <div class="card-footer d-flex justify-content-center flex-wrap gap-2">
-
-                    <a href="{% url 'detalhes_ovino' ovino.pk %}"
-                       class="btn btn-green btn-sm">
-                        <i class="bi bi-eye"></i> Detalhes
-                    </a>
-
-                    {% if user.is_superuser %}
-
-                    <a href="{% url 'editar_ovino' ovino.pk %}"
-                       class="btn btn-warning btn-sm">
-                        <i class="bi bi-pencil-square"></i> Editar
-                    </a>
-
-                    <a href="{% url 'atualizar_status' ovino.pk 'Vendido' %}"
-                       class="btn btn-danger btn-sm">
-                        <i class="bi bi-check-circle"></i> Vendido
-                    </a>
+                        </div>
 
                     {% endif %}
 
+
+                    <div class="card-body">
+
+                        <!-- IDENTIFICAÇÃO -->
+
+                        <h5 class="animal-title">
+
+                            <i class="bi bi-tag"></i>
+
+                            {{ ovino.numero_brinco }} — {{ ovino.raca }}
+
+                        </h5>
+
+
+                        <!-- SEXO -->
+
+                        <div class="animal-info">
+
+                            <strong>
+                                <i class="bi bi-gender-ambiguous"></i> Sexo
+                            </strong>
+
+                            <span>{{ ovino.get_sexo_display }}</span>
+
+                        </div>
+
+
+                        <!-- COR -->
+
+                        <div class="animal-info">
+
+                            <strong>
+                                <i class="bi bi-palette"></i> Cor
+                            </strong>
+
+                            <span>{{ ovino.cor }}</span>
+
+                        </div>
+
+
+                        <!-- PESO -->
+
+                        <div class="animal-info">
+
+                            <strong>
+                                <i class="bi bi-speedometer2"></i> Peso
+                            </strong>
+
+                            <span>{{ ovino.peso_atual }} kg</span>
+
+                        </div>
+
+
+                        <!-- STATUS E COMPRADOR -->
+
+                        <div class="animal-info d-block">
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <strong>
+                                    <i class="bi bi-info-circle"></i> Status
+                                </strong>
+
+                                {% if ovino.status == 'Vendido' %}
+
+                                    <span class="badge bg-danger">
+                                        Vendido
+                                    </span>
+
+                                {% elif ovino.status == 'Disponível' %}
+
+                                    <span class="badge bg-success">
+                                        Disponível
+                                    </span>
+
+                                {% elif ovino.status == 'Reservado' %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        Reservado
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-secondary">
+                                        {{ ovino.status }}
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            {% if ovino.status == 'Vendido' %}
+
+                                <div class="buyer-info">
+
+                                    <i class="bi bi-person-check-fill"></i>
+
+                                    <strong>Comprador:</strong>
+
+                                    {% if ovino.comprador_nome %}
+
+                                        {{ ovino.comprador_nome }}
+
+                                    {% else %}
+
+                                        Não identificado
+
+                                    {% endif %}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         BOTÕES DE AÇÃO
+                    ================================================== -->
+
+                    <div class="card-footer d-flex justify-content-center flex-wrap gap-2">
+
+                        <a
+                            href="{% url 'detalhes_ovino' ovino.pk %}"
+                            class="btn btn-green btn-sm"
+                        >
+
+                            <i class="bi bi-eye"></i> Detalhes
+
+                        </a>
+
+
+                        {% if user.is_superuser %}
+
+                            <a
+                                href="{% url 'editar_ovino' ovino.pk %}"
+                                class="btn btn-warning btn-sm"
+                            >
+
+                                <i class="bi bi-pencil-square"></i> Editar
+
+                            </a>
+
+
+                            <!-- O BOTÃO SÓ APARECE SE NÃO ESTIVER VENDIDO -->
+
+                            {% if ovino.status != 'Vendido' %}
+
+                                <a
+                                    href="{% url 'atualizar_status' ovino.pk 'Vendido' %}"
+                                    class="btn btn-danger btn-sm"
+                                >
+
+                                    <i class="bi bi-check-circle"></i> Vendido
+
+                                </a>
+
+                            {% endif %}
+
+                        {% endif %}
+
+                    </div>
+
                 </div>
 
             </div>
 
-        </div>
-
         {% empty %}
 
-        <div class="col-12">
-            <div class="empty-state">
-                <i class="bi bi-search"></i>
-                <h4 class="fw-bold mt-3">Nenhum animal encontrado</h4>
-                <p class="text-muted mb-0">
-                    Não encontramos animais com os critérios informados.
-                </p>
+            <div class="col-12">
+
+                <div class="empty-state">
+
+                    <i class="bi bi-search"></i>
+
+                    <h4 class="fw-bold mt-3">
+                        Nenhum animal encontrado
+                    </h4>
+
+                    <p class="text-muted mb-0">
+                        Não encontramos animais com os critérios informados.
+                    </p>
+
+                </div>
+
             </div>
-        </div>
 
         {% endfor %}
 
@@ -409,12 +604,21 @@
 
 </main>
 
+
+<!-- =====================================================
+     RODAPÉ
+===================================================== -->
+
 <footer>
+
     <p class="mb-0">
         © AuctionEAJ — Sistema de Gerenciamento de Ovinos
     </p>
+
     <small>EAJ | UFRN</small>
+
 </footer>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
