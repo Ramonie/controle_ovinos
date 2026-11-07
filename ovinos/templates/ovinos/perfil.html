@@ -426,8 +426,12 @@
 <aside class="sidebar">
 
     <div class="logo">
-        <i class="bi bi-gavel"></i><br>
-        Auction<span>EAJ</span>
+        {% load static %}
+
+<img src="{% static 'icone_auctioneaj.png' %}"
+     alt="Logo AuctionEAJ"
+     class="brand-logo">
+        
     </div>
 
     <a href="#perfil" class="active">

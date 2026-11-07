@@ -58,7 +58,7 @@ def lista_ovinos(request):
         'status': request.GET.get('status'),
     }
 
-    ovinos = Ovino.objects.all()
+    ovinos = Ovino.objects.all().order_by('-id')
 
     if query:
         ovinos = ovinos.filter(

@@ -1,49 +1,538 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Detalhes do animal</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container my-5">
-    <h1 class="mb-4">Detalhes do animal</h1>
 
-    <div class="card mx-auto" style="max-width: 400px;">
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Detalhes do Animal | AuctionEAJ</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+      :root {
+    --verde: #14532d;
+    --verde-claro: #eaf4ed;
+    --fundo: #f4f7f5;
+}
+
+/* Configurações gerais */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--fundo);
+    font-family: Arial, sans-serif;
+    color: #343a40;
+    font-size: 13px;
+    margin: 0;
+}
+
+/* Cabeçalho */
+.topbar {
+    background: var(--verde);
+    color: white;
+    padding: 8px 0;
+}
+
+.brand {
+    font-size: 1.15rem;
+    font-weight: bold;
+}
+
+.logo {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+}
+
+/* Área principal */
+main.container {
+    max-width: 850px;
+    margin-top: 12px !important;
+    margin-bottom: 8px !important;
+}
+
+.page-title {
+    color: var(--verde);
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+/* Cartão do animal */
+.animal-card {
+    max-width: 760px;
+    margin: auto;
+    border: none;
+    border-radius: 9px;
+    overflow: hidden;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+}
+
+/* Fotografia */
+.animal-photo {
+    width: 100%;
+    height: 145px;
+    object-fit: contain;
+    background: #e9ecef;
+    display: block;
+}
+
+.photo-placeholder {
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: #e9ecef;
+    color: #6c757d;
+}
+
+.photo-placeholder i {
+    font-size: 1.8rem;
+}
+
+/* Identificação do animal */
+.animal-header {
+    background: var(--verde-claro);
+    padding: 10px 15px;
+    border-bottom: 1px solid #dce9df;
+}
+
+.animal-header h2 {
+    color: var(--verde);
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.badge-status {
+    background: #198754;
+    font-size: 0.75rem;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+.badge-vendido {
+    background: #dc3545;
+}
+
+.badge-reservado {
+    background: #fd7e14;
+}
+
+/* Corpo das informações */
+.card-body {
+    padding: 12px 15px !important;
+}
+
+/* Títulos das seções */
+.section-title {
+    color: var(--verde);
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 5px;
+    margin-bottom: 7px;
+}
+
+.info-icon {
+    color: #198754;
+    margin-right: 4px;
+}
+
+/* Campos de informação */
+.info-item {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 7px 9px;
+    min-height: 48px;
+}
+
+.info-label {
+    display: block;
+    color: #6c757d;
+    font-size: 0.72rem;
+    margin-bottom: 2px;
+}
+
+.info-value {
+    color: #212529;
+    font-size: 0.85rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+/* Botões de ação */
+.action-area {
+    padding: 9px 15px;
+    border-top: 1px solid #e9ecef;
+    background: white;
+}
+
+.action-area .btn {
+    font-size: 0.78rem;
+    padding: 5px 10px;
+}
+
+/* Rodapé */
+footer {
+    font-size: 0.7rem;
+    margin-top: 8px !important;
+    margin-bottom: 5px;
+}
+
+/* Ajustes para telas menores */
+@media (max-width: 576px) {
+
+    main.container {
+        margin-top: 8px !important;
+    }
+
+    .animal-card {
+        max-width: 100%;
+    }
+
+    .animal-photo {
+        height: 120px;
+    }
+
+    .animal-header {
+        text-align: center;
+    }
+
+    .page-title {
+        font-size: 1.1rem;
+    }
+
+    .info-item {
+        padding: 6px;
+        min-height: 44px;
+    }
+
+    .info-value {
+        font-size: 0.78rem;
+    }
+
+    .action-area .btn {
+        font-size: 0.72rem;
+    }
+}
+
+/* Ajuste para monitores com pouca altura */
+@media (min-width: 768px) and (max-height: 800px) {
+
+    main.container {
+        margin-top: 6px !important;
+    }
+
+    .animal-photo {
+        height: 115px;
+    }
+
+    .card-body {
+        padding: 9px 13px !important;
+    }
+
+    .animal-header {
+        padding: 8px 13px;
+    }
+
+    .info-item {
+        min-height: 42px;
+        padding: 5px 8px;
+    }
+
+    .section-title {
+        margin-bottom: 5px;
+        padding-bottom: 3px;
+    }
+
+    footer {
+        margin-top: 5px !important;
+    }
+}
+    </style>    
+</head>
+
+<body>
+
+<!-- Cabeçalho -->
+<header class="topbar">
+    <div class="container d-flex justify-content-between align-items-center">
+
+        <!-- Logo e nome -->
+        <div class="d-flex align-items-center gap-2">
+            <img src="{% static 'icone_auctioneaj.png' %}"
+                 alt="Logo AuctionEAJ"
+                 class="logo">
+
+            <div class="brand">
+                AuctionEAJ
+            </div>
+        </div>
+
+        <!-- Voltar -->
+        <a href="{% url 'lista_ovinos' %}" class="btn btn-outline-light btn-sm py-1">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+
+    </div>
+</header>
+
+<main class="container my-2">
+
+    <!-- Título -->
+    <div class="mb-2">
+        <h1 class="page-title mb-1">
+            <i class="bi bi-card-list me-1"></i>
+            Detalhes do animal
+        </h1>
+
+        <span class="text-muted">
+            Ficha de identificação do animal cadastrado.
+        </span>
+    </div>
+
+    <!-- Cartão do animal -->
+    <div class="card animal-card">
+
+        <!-- Fotografia -->
         {% if ovino.foto %}
-        <img src="{{ ovino.foto.url }}" class="card-img-top" alt="Foto do Ovino">
+
+            <img src="{{ ovino.foto.url }}"
+                 class="animal-photo"
+                 alt="Foto do animal {{ ovino.numero_brinco }}">
+
         {% else %}
-        <img src="https://via.placeholder.com/400x300?text=Sem+Foto" class="card-img-top" alt="Sem Foto">
+
+            <div class="photo-placeholder">
+                <i class="bi bi-camera"></i>
+                <span>Sem fotografia</span>
+            </div>
+
         {% endif %}
 
-        <div class="card-body">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><strong>Número do Brinco:</strong> {{ ovino.numero_brinco }}</li>
-                <li class="list-group-item"><strong>Raça:</strong> {{ ovino.raca }}</li>
-                <li class="list-group-item"><strong>Sexo:</strong> {{ ovino.sexo }}</li>
-                <li class="list-group-item"><strong>Cor:</strong> {{ ovino.cor }}</li>
-                <li class="list-group-item"><strong>Peso atual:</strong> {{ ovino.peso_atual }} kg</li>
-                <li class="list-group-item"><strong>Altura:</strong> {{ ovino.altura }} cm</li>
-                {% if ovino.sexo == 'F' %}
-                    <li class="list-group-item"><strong>Quantidade de crias:</strong> {{ ovino.quantidade_crias }}</li>
-                    <li class="list-group-item"><strong>Peso ao nascer:</strong> {{ ovino.peso_ao_nascer }} kg</li>
-                {% endif %}
-                <li class="list-group-item"><strong>Filiação:</strong> {{ ovino.filiacao }}</li>
-                <li class="list-group-item"><strong>Status:</strong> {{ ovino.status }}</li>
-                <li class="list-group-item"><strong>Data de nascimento:</strong> {{ ovino.data_nascimento }}</li>
-            </ul>
-        </div>
-        <div class="card-body text-center">
-            {% if user.is_superuser %}
-            <a href="{% url 'editar_ovino' ovino.pk %}" class="btn btn-primary me-2">Editar</a>
-            <a href="{% url 'remover_ovino' ovino.pk %}" class="btn btn-danger ">Remover</a>
-            {% endif %}
-            <a href="{% url 'lista_ovinos' %}" class="btn btn-secondary">Voltar à lista</a>
-        </div>
-    </div>
-</div>
+        <!-- Identificação -->
+        <div class="animal-header">
 
-<!-- Bootstrap JS -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+                <div>
+                    <span class="text-muted" style="font-size: .63rem;">
+                        IDENTIFICAÇÃO
+                    </span>
+
+                    <h2>
+                        Brinco Nº {{ ovino.numero_brinco }}
+                    </h2>
+
+                    <span class="text-muted">
+                        {{ ovino.raca }} ·
+
+                        {% if ovino.sexo == 'M' %}
+                            Macho
+                        {% else %}
+                            Fêmea
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Status -->
+                <div>
+                    {% if ovino.status == 'Disponível' %}
+
+                        <span class="badge badge-status">
+                            <i class="bi bi-check-circle"></i>
+                            Disponível
+                        </span>
+
+                    {% elif ovino.status == 'Vendido' %}
+
+                        <span class="badge badge-status badge-vendido">
+                            <i class="bi bi-cart-check"></i>
+                            Vendido
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge badge-status badge-reservado">
+                            <i class="bi bi-clock"></i>
+                            Reservado
+                        </span>
+
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Informações gerais -->
+        <div class="card-body">
+
+            <h3 class="section-title">
+                <i class="bi bi-info-circle info-icon"></i>
+                Informações gerais
+            </h3>
+
+            <div class="row g-1 mb-2">
+
+                <div class="col-4">
+                    <div class="info-item">
+                        <span class="info-label">Raça</span>
+                        <span class="info-value">{{ ovino.raca }}</span>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="info-item">
+                        <span class="info-label">Sexo</span>
+                        <span class="info-value">
+                            {% if ovino.sexo == 'M' %}Macho{% else %}Fêmea{% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="info-item">
+                        <span class="info-label">Cor</span>
+                        <span class="info-value">
+                            {{ ovino.cor|default:"Não informada" }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="info-item">
+                        <span class="info-label">Peso atual</span>
+                        <span class="info-value">
+                            {{ ovino.peso_atual }} kg
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="info-item">
+                        <span class="info-label">Altura</span>
+                        <span class="info-value">
+                            {{ ovino.altura }} cm
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="info-item">
+                        <span class="info-label">Nascimento</span>
+                        <span class="info-value">
+                            {{ ovino.data_nascimento|date:"d/m/Y"|default:"Não informada" }}
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Informações reprodutivas -->
+            {% if ovino.sexo == 'F' %}
+
+                <h3 class="section-title">
+                    <i class="bi bi-heart info-icon"></i>
+                    Informações reprodutivas
+                </h3>
+
+                <div class="row g-1 mb-2">
+
+                    <div class="col-6">
+                        <div class="info-item">
+                            <span class="info-label">Quantidade de crias</span>
+                            <span class="info-value">
+                                {{ ovino.quantidade_crias|default:"Não informada" }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="info-item">
+                            <span class="info-label">Peso ao nascer</span>
+                            <span class="info-value">
+                                {% if ovino.peso_ao_nascer %}
+                                    {{ ovino.peso_ao_nascer }} kg
+                                {% else %}
+                                    Não informado
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+            <!-- Informações genealógicas -->
+            <h3 class="section-title">
+                <i class="bi bi-diagram-3 info-icon"></i>
+                Informações genealógicas
+            </h3>
+
+            <div class="info-item">
+                <span class="info-label">Filiação</span>
+                <span class="info-value">
+                    {{ ovino.filiacao|default:"Não informada" }}
+                </span>
+            </div>
+
+        </div>
+
+        <!-- Botões de ação -->
+        <div class="action-area">
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+                <a href="{% url 'lista_ovinos' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Voltar à lista
+                </a>
+
+                {% if user.is_superuser %}
+
+                    <div class="d-flex gap-1">
+
+                        <a href="{% url 'editar_ovino' ovino.pk %}"
+                           class="btn btn-primary">
+                            <i class="bi bi-pencil-square"></i>
+                            Editar
+                        </a>
+
+                        <a href="{% url 'remover_ovino' ovino.pk %}"
+                           class="btn btn-danger">
+                            <i class="bi bi-trash"></i>
+                            Remover
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="text-center text-muted mt-2">
+        AuctionEAJ · Sistema de gerenciamento e leilão de animais
+    </footer>
+
+</main>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

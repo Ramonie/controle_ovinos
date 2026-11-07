@@ -244,8 +244,11 @@
 
     <a href="{% url 'home' %}" class="brand">
 
-        <img src="{% static 'img/logo_auctioneaj.png' %}"
-             alt="Logo AuctionEAJ">
+        {% load static %}
+
+<img src="{% static 'icone_auctioneaj.png' %}"
+     alt="Logo AuctionEAJ"
+     class="brand-logo">
 
         <h2>AuctionEAJ</h2>
 
