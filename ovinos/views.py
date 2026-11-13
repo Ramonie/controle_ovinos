@@ -703,26 +703,55 @@ from django.views.decorators.http import require_POST
 
 @user_passes_test(lambda user: user.is_superuser)
 @require_POST
+# ============================================================
+# REABRIR LOTE
+# ============================================================
+
+@login_required
+@user_passes_test(lambda user: user.is_superuser)
+@require_POST
 def reabrir_lote(request, lote_id):
 
-    lote = get_object_or_404(LoteLeilao, id=lote_id)
+    with transaction.atomic():
 
-    if lote.encerrado:
+        lote = get_object_or_404(
+            LoteLeilao.objects.select_for_update(),
+            pk=lote_id
+        )
+
+        if not lote.encerrado:
+
+            messages.info(
+                request,
+                f'O lote {lote.numero_lote} já está aberto.'
+            )
+
+            return redirect('leilao_view')
+
+        # Remove o registro de arrematação anterior.
+        AnimalArrematado.objects.filter(
+            lote=lote
+        ).delete()
+
+        # Retorna os animais do lote para disponíveis.
+        lote.ovinos.update(
+            status='Disponível'
+        )
+
+        # Reabre o lote.
         lote.encerrado = False
-        lote.save(update_fields=['encerrado'])
+        lote.save(
+            update_fields=['encerrado']
+        )
 
-        messages.success(
-            request,
-            f'O lote {lote.numero_lote} foi reaberto com sucesso!'
-        )
-    else:
-        messages.info(
-            request,
-            f'O lote {lote.numero_lote} já está aberto.'
-        )
+    messages.success(
+        request,
+        f'Lote {lote.numero_lote} reaberto com sucesso! '
+        'Os animais voltaram a ficar disponíveis e o registro '
+        'da arrematação anterior foi removido.'
+    )
 
     return redirect('leilao_view')
-
 # ============================================================
 # ATUALIZAR INFORMAÇÕES DO ÚLTIMO LANCE (AJAX)
 # ============================================================
@@ -917,15 +946,29 @@ def encerrar_leilao_individual(request, lote_id):
 # PERFIL DO USUÁRIO
 # ============================================================
 
+
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.shortcuts import render, redirect
+
+from .models import Profile, Lance, AnimalArrematado
+from .forms import ProfileForm
+
+
 @login_required
 def perfil(request):
 
-    # Cria o perfil caso ainda não exista
+    User = get_user_model()
+
+    # Cria o perfil caso ainda não exista.
     profile, criado = Profile.objects.get_or_create(
         user=request.user,
         defaults={'role': 'visitor'}
     )
 
+    # Histórico de lances realizados pelo usuário.
     lances = (
         Lance.objects
         .filter(usuario=request.user)
@@ -933,13 +976,18 @@ def perfil(request):
         .order_by('-data_hora')
     )
 
+    # Exibe somente arrematações de lotes que continuam encerrados.
     animais = (
         AnimalArrematado.objects
-        .filter(usuario=request.user)
+        .filter(
+            usuario=request.user,
+            lote__encerrado=True
+        )
         .select_related('lote')
         .order_by('-data_arremate')
     )
 
+    # Formulário de edição do perfil pessoal.
     if request.method == 'POST':
 
         form = ProfileForm(
@@ -961,21 +1009,128 @@ def perfil(request):
 
     else:
 
-        form = ProfileForm(
-            instance=profile
+        form = ProfileForm(instance=profile)
+
+    # Contexto administrativo.
+    # Essas informações só são carregadas para superusuários.
+    usuarios = []
+    total_visitantes = 0
+    total_administradores = 0
+
+    if request.user.is_superuser:
+
+        # Lista os usuários cadastrados.
+        usuarios = (
+            User.objects
+            .all()
+            .order_by('username')
         )
+
+        # Quantidade de usuários com perfil de visitante.
+        total_visitantes = Profile.objects.filter(
+            role='visitor'
+        ).count()
+
+        # Quantidade de superusuários.
+        total_administradores = User.objects.filter(
+            is_superuser=True
+        ).count()
+
+    # Envia todos os dados para o HTML.
+    context = {
+        'form': form,
+        'lances': lances,
+        'animais': animais,
+        'profile': profile,
+
+        # Dados para gerenciamento de usuários.
+        'usuarios': usuarios,
+        'total_visitantes': total_visitantes,
+        'total_administradores': total_administradores,
+    }
 
     return render(
         request,
         'ovinos/perfil.html',
-        {
-            'form': form,
-            'lances': lances,
-            'animais': animais,
-            'profile': profile,
-        }
+        context
+    )
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, render, redirect
+
+from .models import Profile
+
+
+@login_required
+@user_passes_test(lambda user: user.is_superuser)
+def editar_usuario_admin(request, usuario_id):
+
+    User = get_user_model()
+
+    usuario = get_object_or_404(User, pk=usuario_id)
+
+    profile, criado = Profile.objects.get_or_create(
+        user=usuario,
+        defaults={'role': 'visitor'}
     )
 
+    if request.method == 'POST':
+
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        role = request.POST.get('role', 'visitor')
+
+        is_superuser = request.POST.get('is_superuser') == 'on'
+
+        if not username:
+            messages.error(request, 'O nome de usuário é obrigatório.')
+            return redirect('editar_usuario_admin', usuario_id=usuario.pk)
+
+        if User.objects.filter(username=username).exclude(pk=usuario.pk).exists():
+            messages.error(request, 'Esse nome de usuário já está em uso.')
+            return redirect('editar_usuario_admin', usuario_id=usuario.pk)
+
+        # Impede que o administrador remova o próprio acesso.
+        if usuario.pk == request.user.pk and not is_superuser:
+            messages.error(
+                request,
+                'Você não pode remover seu próprio acesso de superusuário.'
+            )
+            return redirect('editar_usuario_admin', usuario_id=usuario.pk)
+
+        usuario.username = username
+        usuario.email = email
+        usuario.is_superuser = is_superuser
+        usuario.save()
+
+        # Atualiza os dados complementares do perfil.
+        profile.phone = phone
+
+        if role in dict(Profile._meta.get_field('role').choices):
+            profile.role = role
+
+        profile.save()
+
+        messages.success(
+            request,
+            f'Cadastro de {usuario.username} atualizado com sucesso!'
+        )
+
+        return redirect('perfil')
+
+    context = {
+        'usuario': usuario,
+        'profile': profile,
+    }
+
+    return render(
+        request,
+        'ovinos/editar_usuario_admin.html',
+        context
+    )
+    
 
 # ============================================================
 # CADASTRO DE USUÁRIO
@@ -1166,4 +1321,35 @@ def historico_lances(request, pk):
             'lances': lances,
             'maior_lance': maior_lance,
         }
+    )
+from .models import AnimalArrematado
+@login_required
+def detalhes_lote_arrematado(request, pk):
+
+    # Busca o arremate realizado pelo usuário logado.
+    arremate = get_object_or_404(
+        AnimalArrematado.objects.select_related('lote'),
+        lote__pk=pk,
+        usuario=request.user
+    )
+
+    lote = arremate.lote
+
+    # Busca os animais vinculados ao lote.
+    ovinos = lote.ovinos.all().order_by('numero_brinco')
+
+    # Busca o histórico de lances do lote.
+    lances = lote.lances.select_related('usuario').order_by('-data_hora')
+
+    context = {
+        'arremate': arremate,
+        'lote': lote,
+        'ovinos': ovinos,
+        'lances': lances,
+    }
+
+    return render(
+        request,
+        'ovinos/detalhes_lote_arrematado.html',
+        context
     )

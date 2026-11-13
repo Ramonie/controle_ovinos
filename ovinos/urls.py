@@ -90,7 +90,16 @@ urlpatterns = [
         ),
         name='password_reset_complete'
     ),
-
+    path(
+    'perfil/lote-arrematado/<int:pk>/',
+    views.detalhes_lote_arrematado,
+    name='detalhes_lote_arrematado'
+),
+    path(
+    'perfil/usuario/<int:usuario_id>/editar/',
+    views.editar_usuario_admin,
+    name='editar_usuario_admin'
+),
     # Login Gov.br
     path('govbr/login/', views.login_govbr, name='login_govbr'),
     path('govbr/callback/', views.callback_govbr, name='govbr_callback'),
