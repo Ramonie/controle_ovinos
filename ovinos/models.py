@@ -36,12 +36,31 @@ class Ovino(models.Model):
         return f"{self.numero_brinco} - {self.raca}"
 
 
+
 class LoteLeilao(models.Model):
     numero_lote = models.CharField(max_length=50, unique=True)
     descricao = models.TextField()
     data_leilao = models.DateField()
-    preco_inicial = models.DecimalField(max_digits=10, decimal_places=2)
-    foto = models.ImageField(upload_to='fotos_ovinos/', blank=True, null=True)
+
+    preco_inicial = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    # Valor mínimo que deverá ser acrescentado a cada lance
+    variacao_lance = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=10.00,
+        verbose_name="Variação mínima do lance"
+    )
+
+    foto = models.ImageField(
+        upload_to='fotos_ovinos/',
+        blank=True,
+        null=True
+    )
+
     encerrado = models.BooleanField(default=False)
 
     ovinos = models.ManyToManyField(
@@ -52,6 +71,7 @@ class LoteLeilao(models.Model):
 
     def __str__(self):
         return f"Lote {self.numero_lote}"
+
 
 class Lance(models.Model):
     lote = models.ForeignKey(LoteLeilao, on_delete=models.CASCADE, related_name='lances', null=True, blank=True)

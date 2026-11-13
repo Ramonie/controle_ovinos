@@ -441,37 +441,107 @@ def leilao_view(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+
+# ============================================================
+# CADASTRAR LOTE
+# ============================================================
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
 def cadastrar_lote(request):
 
     if request.method == 'POST':
-        form = LoteLeilaoForm(request.POST, request.FILES)
+
+        form = LoteLeilaoForm(
+            request.POST,
+            request.FILES
+        )
 
         if form.is_valid():
-            lote = form.save()
 
-            quantidade = lote.ovinos.count()
-
-            messages.success(
-                request,
-                f'Lote cadastrado com sucesso! '
-                f'{quantidade} animal(is) associado(s).'
+            animais_selecionados = form.cleaned_data.get(
+                'ovinos'
             )
 
-            return redirect('leilao_view')
+            ids_animais = [
+                animal.pk for animal in animais_selecionados
+            ]
 
-        else:
+            with transaction.atomic():
+
+                # Bloqueia os registros dos animais selecionados
+                # durante a operação de cadastro.
+                list(
+                    Ovino.objects.select_for_update().filter(
+                        pk__in=ids_animais
+                    )
+                )
+
+                # Confere novamente se algum animal já foi
+                # associado a outro lote.
+                animais_bloqueados = Ovino.objects.filter(
+                    pk__in=ids_animais,
+                    lotes__isnull=False
+                ).distinct()
+
+                if animais_bloqueados.exists():
+
+                    brincos = ', '.join(
+                        str(animal.numero_brinco)
+                        for animal in animais_bloqueados
+                    )
+
+                    form.add_error(
+                        'ovinos',
+                        'Não foi possível cadastrar o lote. '
+                        f'O(s) animal(is) {brincos} já pertence(m) '
+                        'a outro lote.'
+                    )
+
+                else:
+
+                    # Salva o lote e seus animais.
+                    lote = form.save()
+
+                    quantidade = lote.ovinos.count()
+
+                    messages.success(
+                        request,
+                        f'Lote cadastrado com sucesso! '
+                        f'{quantidade} animal(is) associado(s).'
+                    )
+
+                    return redirect('leilao_view')
+
+        if not form.is_valid() or form.errors:
+
             messages.error(
                 request,
-                'Não foi possível cadastrar o lote. Verifique os campos.'
+                'Não foi possível cadastrar o lote. '
+                'Verifique os campos informados e os animais selecionados.'
             )
 
     else:
+
         form = LoteLeilaoForm()
+
+    # Lista todos os animais que já pertencem a algum lote.
+    # Essa lista será exibida no aviso do HTML.
+    ovinos_em_lotes = (
+        Ovino.objects
+        .filter(lotes__isnull=False)
+        .distinct()
+        .prefetch_related('lotes')
+        .order_by('numero_brinco')
+    )
 
     return render(
         request,
         'ovinos/cadastrar_lote.html',
-        {'form': form}
+        {
+            'form': form,
+            'ovinos_em_lotes': ovinos_em_lotes,
+        }
     )
 
 # ============================================================
@@ -507,13 +577,15 @@ def dar_lance(request, pk):
                 else lote.preco_inicial
             )
 
+            # Obtém a variação configurada no lote
+            variacao = lote.variacao_lance
+
             valor_digitado = request.POST.get(
                 'valor',
                 ''
             ).strip()
 
             try:
-
                 valor_escolhido = Decimal(
                     valor_digitado.replace(',', '.')
                 )
@@ -544,12 +616,12 @@ def dar_lance(request, pk):
                         f'O lance mínimo é R$ {lote.preco_inicial:.2f}.'
                     )
 
-                elif ultimo_lance and valor_escolhido <= valor_base:
+                elif valor_escolhido < valor_base + variacao:
 
                     messages.error(
                         request,
-                        f'O novo lance deve ser maior que '
-                        f'R$ {valor_base:.2f}.'
+                        f'O próximo lance deve ser de pelo menos '
+                        f'R$ {valor_base + variacao:.2f}.'
                     )
 
                 elif valor_escolhido.as_tuple().exponent < -2:
@@ -594,18 +666,21 @@ def dar_lance(request, pk):
         else lote.preco_inicial
     )
 
+    # Obtém a variação configurada no lote
+    variacao = lote.variacao_lance
+
     # Opções automáticas de lance
     if ultimo_lance:
 
         opcoes_lances = [
-            valor_base + Decimal('50.00') * i
+            valor_base + variacao * i
             for i in range(1, 7)
         ]
 
     else:
 
         opcoes_lances = [
-            lote.preco_inicial + Decimal('50.00') * i
+            lote.preco_inicial + variacao * i
             for i in range(6)
         ]
 
@@ -617,8 +692,10 @@ def dar_lance(request, pk):
             'opcoes_lances': opcoes_lances,
             'ultimo_lance': ultimo_lance,
             'valor_base': valor_base,
+            'variacao': variacao,
         }
     )
+
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
